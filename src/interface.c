@@ -29,9 +29,7 @@ SOAP_FMAC5 int SOAP_FMAC6 __wsdd__Bye(struct soap* soap, struct wsdd__ByeType *w
 SOAP_FMAC5 int SOAP_FMAC6 __wsdd__ProbeMatches(struct soap* soap, struct wsdd__ProbeMatchesType *wsdd__ProbeMatches)
 {
 
-    printf("-----------__wsdd__ProbeMatches-----------------\n");
-
-    return SOAP_OK;
+    return 0;
 }
  
 SOAP_FMAC5 int SOAP_FMAC6 __wsdd__Resolve(struct soap* soap, struct wsdd__ResolveType *wsdd__Resolve)
@@ -46,95 +44,91 @@ SOAP_FMAC5 int SOAP_FMAC6 __wsdd__ResolveMatches(struct soap* soap, struct wsdd_
 	return 0;
 }
  
- 
-
 static char g_uuid[64] = {0};
 SOAP_FMAC5 int SOAP_FMAC6  __wsdd__Probe(struct soap* soap, struct wsdd__ProbeType *wsdd__Probe)
 {
     printf("---------------------------------------------\n");
-        char                            ip_addr[32] = {0};
-        char                            mac_addr[13] = {0};
-        struct wsdd__ScopesType         *pScopes = NULL;
-        char                            str_tmp[256] = {0};
+    char                            ip_addr[32] = {0};
+    char                            mac_addr[13] = {0};
+    struct wsdd__ScopesType         *pScopes = NULL;
+    char                            str_tmp[256] = {0};
 
-        char scopes_message[] =
-            "onvif://www.onvif.org/type/NetworkVideoTransmitter\r\n"
-            "onvif://www.onvif.org/Profile/Streaming\r\n"
-            "onvif://www.onvif.org/Profile/Q/Operational\r\n"
-            "onvif://www.onvif.org/hardware/HD1080P\r\n"
-            "onvif://www.onvif.org/name/discover_test\r\n"
-            "onvif://www.onvif.org/location/city/GuangZhou\r\n"
-            "onvif://www.onvif.org/location/country/China\r\n";
+    char scopes_message[] =
+        "onvif://www.onvif.org/type/NetworkVideoTransmitter\r\n"
+        "onvif://www.onvif.org/Profile/Streaming\r\n"
+        "onvif://www.onvif.org/Profile/Q/Operational\r\n"
+        "onvif://www.onvif.org/hardware/HD1080P\r\n"
+        "onvif://www.onvif.org/name/discover_test\r\n"
+        "onvif://www.onvif.org/location/city/GuangZhou\r\n"
+        "onvif://www.onvif.org/location/country/China\r\n";
 
-         sprintf(ip_addr, "%u.%u.%u.%u", ((soap->ip)>>24)&0xFF, ((soap->ip)>>16)&0xFF, ((soap->ip)>>8)&0xFF,(soap->ip)&0xFF);
-      //   printf(ip_addr, "%u.%u.%u.%u", ((soap->ip)>>24)&0xFF, ((soap->ip)>>16)&0xFF, ((soap->ip)>>8)&0xFF,(soap->ip)&0xFF);
-         sprintf(mac_addr, "000c29c9338f");
-       
-        //printf("========================+++++========");
-        //printf("%s\r\n", ip_addr);
-
-        // verify scropes
-        if( wsdd__Probe->Scopes && wsdd__Probe->Scopes->__item )
-        {
-            if( wsdd__Probe->Scopes->MatchBy )
-            {
-            }
-            else
-            {
-            }
-        }
-
-        // response ProbeMatches
-        struct wsdd__ProbeMatchesType   wsdd__ProbeMatches = {0};
-        struct wsdd__ProbeMatchType     *pProbeMatchType = NULL;
-        struct wsa__Relationship        *pWsa__RelatesTo = NULL;
-        char                            *pMessageID = NULL;
-
-        pProbeMatchType = (struct wsdd__ProbeMatchType*)soap_malloc(soap, sizeof(struct wsdd__ProbeMatchType));
-        soap_default_wsdd__ProbeMatchType(soap, pProbeMatchType);
-
-        //sprintf(str_tmp, "http://%s/onvif/device_service", ip_addr);
-        sprintf(str_tmp, "http://%s:%d/onvif/device_service", ONVIF_TCP_IP, ONVIF_TCP_PORT);
-        pProbeMatchType->XAddrs = soap_strdup(soap, str_tmp);
-        if( wsdd__Probe->Types && strlen(wsdd__Probe->Types) )
-            pProbeMatchType->Types  = soap_strdup(soap, wsdd__Probe->Types);
-        else
-            pProbeMatchType->Types  = soap_strdup(soap, "dn:NetworkVideoTransmitter tds:Device");
-
-        pProbeMatchType->MetadataVersion = 1;
-
-        // Build Scopes Message
-        pScopes = (struct wsdd__ScopesType *)soap_malloc(soap, sizeof(struct wsdd__ScopesType));
-        soap_default_wsdd__ScopesType(soap, pScopes);
-        //pScopes->MatchBy = soap_strdup(soap, "http://docs.oasis-open.org/ws-dd/ns/discovery/2009/01/rfc3986");
-        pScopes->MatchBy = NULL;
-        pScopes->__item  = soap_strdup(soap, scopes_message);
-        pProbeMatchType->Scopes = pScopes;
-
-        if( !strlen(g_uuid) )
-            snprintf(g_uuid, 64, "%s", soap_wsa_rand_uuid(soap));
-        pMessageID = g_uuid;
-       // snprintf(str_tmp, 256, "%s-%s", pMessageID, mac_addr);
-        sprintf(str_tmp, "%s", pMessageID);
-        printf("g_uuid: %s\n", pMessageID);
-
-        pProbeMatchType->wsa__EndpointReference.Address = soap_strdup(soap, pMessageID);
-
-        wsdd__ProbeMatches.__sizeProbeMatch = 1;
-        wsdd__ProbeMatches.ProbeMatch       = pProbeMatchType;
-
-        // Build SOAP Header
-        pWsa__RelatesTo = (struct wsa__Relationship*)soap_malloc(soap, sizeof(struct wsa__Relationship));
-        soap_default__wsa__RelatesTo(soap, pWsa__RelatesTo);
-        pWsa__RelatesTo->__item = soap->header->wsa__MessageID;
-        soap->header->wsa__RelatesTo = pWsa__RelatesTo;
-        soap->header->wsa__Action      = soap_strdup(soap, "http://schemas.xmlsoap.org/ws/2005/04/discovery/ProbeMatches");
-        soap->header->wsa__To          = soap_strdup(soap, "http://schemas.xmlsoap.org/ws/2004/08/addressing/role/anonymous");
-
-        soap_send___wsdd__ProbeMatches(soap, "http://", NULL, &wsdd__ProbeMatches);
-
-	return SOAP_OK;
+        sprintf(ip_addr, "%u.%u.%u.%u", ((soap->ip)>>24)&0xFF, ((soap->ip)>>16)&0xFF, ((soap->ip)>>8)&0xFF,(soap->ip)&0xFF);
+    //   printf(ip_addr, "%u.%u.%u.%u", ((soap->ip)>>24)&0xFF, ((soap->ip)>>16)&0xFF, ((soap->ip)>>8)&0xFF,(soap->ip)&0xFF);
+        sprintf(mac_addr, "000c29c9338f");
     
+    //printf("========================+++++========");
+    //printf("%s\r\n", ip_addr);
+
+    // verify scropes
+    if( wsdd__Probe->Scopes && wsdd__Probe->Scopes->__item )
+    {
+        if( wsdd__Probe->Scopes->MatchBy )
+        {
+        }
+        else
+        {
+        }
+    }
+
+    // response ProbeMatches
+    struct wsdd__ProbeMatchesType   wsdd__ProbeMatches = {0};
+    struct wsdd__ProbeMatchType     *pProbeMatchType = NULL;
+    struct wsa__Relationship        *pWsa__RelatesTo = NULL;
+    char                            *pMessageID = NULL;
+
+    pProbeMatchType = (struct wsdd__ProbeMatchType*)soap_malloc(soap, sizeof(struct wsdd__ProbeMatchType));
+    soap_default_wsdd__ProbeMatchType(soap, pProbeMatchType);
+
+    //sprintf(str_tmp, "http://%s/onvif/device_service", ip_addr);
+    sprintf(str_tmp, "http://%s:%d/onvif/device_service", ONVIF_TCP_IP, ONVIF_TCP_PORT);
+    pProbeMatchType->XAddrs = soap_strdup(soap, str_tmp);
+    if( wsdd__Probe->Types && strlen(wsdd__Probe->Types) )
+        pProbeMatchType->Types  = soap_strdup(soap, wsdd__Probe->Types);
+    else
+        pProbeMatchType->Types  = soap_strdup(soap, "dn:NetworkVideoTransmitter tds:Device");
+
+    pProbeMatchType->MetadataVersion = 1;
+
+    // Build Scopes Message
+    pScopes = (struct wsdd__ScopesType *)soap_malloc(soap, sizeof(struct wsdd__ScopesType));
+    soap_default_wsdd__ScopesType(soap, pScopes);
+    //pScopes->MatchBy = soap_strdup(soap, "http://docs.oasis-open.org/ws-dd/ns/discovery/2009/01/rfc3986");
+    pScopes->MatchBy = NULL;
+    pScopes->__item  = soap_strdup(soap, scopes_message);
+    pProbeMatchType->Scopes = pScopes;
+
+    if( !strlen(g_uuid) )
+        snprintf(g_uuid, 64, "%s", soap_wsa_rand_uuid(soap));
+    pMessageID = g_uuid;
+    // snprintf(str_tmp, 256, "%s-%s", pMessageID, mac_addr);
+    sprintf(str_tmp, "%s", pMessageID);
+    printf("g_uuid: %s\n", pMessageID);
+
+    pProbeMatchType->wsa__EndpointReference.Address = soap_strdup(soap, pMessageID);
+
+    wsdd__ProbeMatches.__sizeProbeMatch = 1;
+    wsdd__ProbeMatches.ProbeMatch       = pProbeMatchType;
+
+    // Build SOAP Header
+    pWsa__RelatesTo = (struct wsa__Relationship*)soap_malloc(soap, sizeof(struct wsa__Relationship));
+    soap_default__wsa__RelatesTo(soap, pWsa__RelatesTo);
+    pWsa__RelatesTo->__item = soap->header->wsa__MessageID;
+    soap->header->wsa__RelatesTo = pWsa__RelatesTo;
+    soap->header->wsa__Action      = soap_strdup(soap, "http://schemas.xmlsoap.org/ws/2005/04/discovery/ProbeMatches");
+    soap->header->wsa__To          = soap_strdup(soap, "http://schemas.xmlsoap.org/ws/2004/08/addressing/role/anonymous");
+
+    soap_send___wsdd__ProbeMatches(soap, "http://", NULL, &wsdd__ProbeMatches);
+	return 0;
 }
 
 
@@ -646,45 +640,7 @@ SOAP_FMAC5 int SOAP_FMAC6 __tdn__Probe(struct soap* soap, struct wsdd__ProbeType
 /** Web service operation '__tds__GetServices' (returns SOAP_OK or error code) */
 SOAP_FMAC5 int SOAP_FMAC6 __tds__GetServices(struct soap* soap, struct _tds__GetServices *tds__GetServices, struct _tds__GetServicesResponse *tds__GetServicesResponse)
 {
-    printf("-------------------------------__tds__GetServices-------------------------------------\n");
-    int size = 3;
-    tds__GetServicesResponse->__sizeService = size;
-    tds__GetServicesResponse->Service = (struct tds__Service *)soap_malloc(soap, sizeof(struct tds__Service) * size);
-
-    //device
-    int i = 0;
-    tds__GetServicesResponse->Service[i].Namespace = (char *)soap_malloc(soap, sizeof(char)* 100);
-    strcpy(tds__GetServicesResponse->Service[i].Namespace, "http://www.onvif.org/ver10/device/wsdl");
-    tds__GetServicesResponse->Service[i].XAddr     = (char *)soap_malloc(soap, sizeof(char)* 100);
-    sprintf(tds__GetServicesResponse->Service[i].XAddr, "http://%s:%d/onvif/device_service", ONVIF_TCP_IP, ONVIF_TCP_PORT);
-
-    //media
-    i = 1;
-    tds__GetServicesResponse->Service[i].Namespace = (char *)soap_malloc(soap, sizeof(char)* 100);
-    strcpy(tds__GetServicesResponse->Service[i].Namespace, "http://www.onvif.org/ver10/media/wsdl");
-    tds__GetServicesResponse->Service[i].XAddr     = (char *)soap_malloc(soap, sizeof(char)* 100);
-    sprintf(tds__GetServicesResponse->Service[i].XAddr, "http://%s:%d/onvif/media_service", ONVIF_TCP_IP, ONVIF_TCP_PORT);
-
-    //image
-    i = 2;
-    tds__GetServicesResponse->Service[i].Namespace = (char *)soap_malloc(soap, sizeof(char)* 100);
-    strcpy(tds__GetServicesResponse->Service[i].Namespace, "http://www.onvif.org/ver10/imaging/wsdl");
-    tds__GetServicesResponse->Service[i].XAddr     = (char *)soap_malloc(soap, sizeof(char)* 100);
-    sprintf(tds__GetServicesResponse->Service[i].XAddr, "http://%s:%d/onvif/image_service", ONVIF_TCP_IP, ONVIF_TCP_PORT);
-
-    for(int i=0; i<tds__GetServicesResponse->__sizeService; i++) {
-        tds__GetServicesResponse->Service[i].Capabilities = NULL;
-        tds__GetServicesResponse->Service[i].Version = (struct tt__OnvifVersion *)soap_malloc(soap, sizeof(struct tt__OnvifVersion));
-        tds__GetServicesResponse->Service[i].Version->Major = 1;
-        tds__GetServicesResponse->Service[i].Version->Minor = 10;
-        tds__GetServicesResponse->Service[i].__size = 0;
-        tds__GetServicesResponse->Service[i].__any = NULL;
-        tds__GetServicesResponse->Service[i].__anyAttribute = NULL;
-    }
-
-
-    printf("__tds__GetServices is over\n");
-
+    
     return 0;
 }
 
@@ -697,18 +653,7 @@ SOAP_FMAC5 int SOAP_FMAC6 __tds__GetServiceCapabilities(struct soap* soap, struc
 /** Web service operation '__tds__GetDeviceInformation' (returns SOAP_OK or error code) */
 SOAP_FMAC5 int SOAP_FMAC6 __tds__GetDeviceInformation(struct soap* soap, struct _tds__GetDeviceInformation *tds__GetDeviceInformation, struct _tds__GetDeviceInformationResponse *tds__GetDeviceInformationResponse)
 {
-    printf("-------------------------__tds__GetDeviceInformation------------------------------\n");
-    tds__GetDeviceInformationResponse->Manufacturer = (char *)soap_malloc(soap, sizeof(char) * 32);
-    tds__GetDeviceInformationResponse->Model = (char *)soap_malloc(soap, sizeof(char) * 32);
-    tds__GetDeviceInformationResponse->FirmwareVersion = (char *)soap_malloc(soap, sizeof(char) * 32);
-    tds__GetDeviceInformationResponse->SerialNumber = (char *)soap_malloc(soap, sizeof(char) * 32);
-    tds__GetDeviceInformationResponse->HardwareId = (char *)soap_malloc(soap, sizeof(char) * 32);
 
-    strcpy(tds__GetDeviceInformationResponse->Manufacturer, "STONKAM");
-    strcpy(tds__GetDeviceInformationResponse->Model, "HD1080P");
-    strcpy(tds__GetDeviceInformationResponse->FirmwareVersion, "v1.0.9");
-    strcpy(tds__GetDeviceInformationResponse->SerialNumber, "IPC123456");
-    strcpy(tds__GetDeviceInformationResponse->HardwareId, "1.0");
 
     return 0;
 }
@@ -770,42 +715,6 @@ SOAP_FMAC5 int SOAP_FMAC6 __tds__GetSystemSupportInformation(struct soap* soap, 
 /** Web service operation '__tds__GetScopes' (returns SOAP_OK or error code) */
 SOAP_FMAC5 int SOAP_FMAC6 __tds__GetScopes(struct soap* soap, struct _tds__GetScopes *tds__GetScopes, struct _tds__GetScopesResponse *tds__GetScopesResponse)
 {
-    printf("--------------------------__tds__GetScopes---------------------------\n");
-
-    tds__GetScopesResponse->__sizeScopes = 7;
-    tds__GetScopesResponse->Scopes = (struct tt__Scope *)soap_malloc(soap, sizeof(struct tt__Scope) * tds__GetScopesResponse->__sizeScopes);
-    memset(tds__GetScopesResponse->Scopes, 0, sizeof(struct tt__Scope) * tds__GetScopesResponse->__sizeScopes);
-
-    tds__GetScopesResponse->Scopes[0].ScopeDef = tt__ScopeDefinition__Fixed;
-    tds__GetScopesResponse->Scopes[1].ScopeDef = tt__ScopeDefinition__Configurable;
-    tds__GetScopesResponse->Scopes[2].ScopeDef = tt__ScopeDefinition__Configurable;
-    tds__GetScopesResponse->Scopes[3].ScopeDef = tt__ScopeDefinition__Configurable;
-    tds__GetScopesResponse->Scopes[4].ScopeDef = tt__ScopeDefinition__Fixed;
-    tds__GetScopesResponse->Scopes[5].ScopeDef = tt__ScopeDefinition__Configurable;
-    tds__GetScopesResponse->Scopes[6].ScopeDef = tt__ScopeDefinition__Configurable;
-
-    tds__GetScopesResponse->Scopes[0].ScopeItem = (char *)soap_malloc(soap, sizeof(char) * 100);
-    tds__GetScopesResponse->Scopes[1].ScopeItem = (char *)soap_malloc(soap, sizeof(char) * 100);
-    tds__GetScopesResponse->Scopes[2].ScopeItem = (char *)soap_malloc(soap, sizeof(char) * 100);
-    tds__GetScopesResponse->Scopes[3].ScopeItem = (char *)soap_malloc(soap, sizeof(char) * 100);
-    tds__GetScopesResponse->Scopes[4].ScopeItem = (char *)soap_malloc(soap, sizeof(char) * 100);
-    tds__GetScopesResponse->Scopes[5].ScopeItem = (char *)soap_malloc(soap, sizeof(char) * 100);
-    tds__GetScopesResponse->Scopes[6].ScopeItem = (char *)soap_malloc(soap, sizeof(char) * 100);
-    memset(tds__GetScopesResponse->Scopes[0].ScopeItem, '\0', sizeof(char) * 100);
-    memset(tds__GetScopesResponse->Scopes[1].ScopeItem, '\0', sizeof(char) * 100);
-    memset(tds__GetScopesResponse->Scopes[2].ScopeItem, '\0', sizeof(char) * 100);
-    memset(tds__GetScopesResponse->Scopes[3].ScopeItem, '\0', sizeof(char) * 100);
-    memset(tds__GetScopesResponse->Scopes[4].ScopeItem, '\0', sizeof(char) * 100);
-    memset(tds__GetScopesResponse->Scopes[5].ScopeItem, '\0', sizeof(char) * 100);
-    memset(tds__GetScopesResponse->Scopes[6].ScopeItem, '\0', sizeof(char) * 100);
-
-    strcpy(tds__GetScopesResponse->Scopes[0].ScopeItem, "onvif://www.onvif.org/type/Network_Video_Transmitter");
-    strcpy(tds__GetScopesResponse->Scopes[1].ScopeItem, "onvif://www.onvif.org/Profile/Streaming");
-    strcpy(tds__GetScopesResponse->Scopes[2].ScopeItem, "onvif://www.onvif.org/Profile/Q/Operational");
-    strcpy(tds__GetScopesResponse->Scopes[3].ScopeItem, "onvif://www.onvif.org/hardware/HD1080P");
-    strcpy(tds__GetScopesResponse->Scopes[4].ScopeItem, "onvif://www.onvif.org/name/discover_test");
-    strcpy(tds__GetScopesResponse->Scopes[5].ScopeItem, "onvif://www.onvif.org/location/city/GuangZhou");
-    strcpy(tds__GetScopesResponse->Scopes[6].ScopeItem, "onvif://www.onvif.org/location/country/China");
 
     return 0;
 }
@@ -879,18 +788,7 @@ SOAP_FMAC5 int SOAP_FMAC6 __tds__SetRemoteUser(struct soap* soap, struct _tds__S
 /** Web service operation '__tds__GetUsers' (returns SOAP_OK or error code) */
 SOAP_FMAC5 int SOAP_FMAC6 __tds__GetUsers(struct soap* soap, struct _tds__GetUsers *tds__GetUsers, struct _tds__GetUsersResponse *tds__GetUsersResponse)
 {
-    printf("--------------------__tds__GetUsers--------------------");
-    tds__GetUsersResponse->__sizeUser = 1;
-    tds__GetUsersResponse->User = (struct tt__User *)soap_malloc(soap, sizeof(struct tt__User));
-    memset(tds__GetUsersResponse->User, 0, sizeof(struct tt__User));
-    tds__GetUsersResponse->User->Username = (char *)soap_malloc(soap, sizeof(char) * 32);
-    memset(tds__GetUsersResponse->User->Username, 0, sizeof(char) * 32);
-    tds__GetUsersResponse->User->Password = (char *)soap_malloc(soap, sizeof(char) * 32);
-    memset(tds__GetUsersResponse->User->Password, 0, sizeof(char) * 32);
-    tds__GetUsersResponse->User->UserLevel = tt__UserLevel__User;
 
-    strcpy(tds__GetUsersResponse->User->Username, "admin");
-    strcpy(tds__GetUsersResponse->User->Password, "123456");
 
     return SOAP_OK;
 }
@@ -922,140 +820,6 @@ SOAP_FMAC5 int SOAP_FMAC6 __tds__GetWsdlUrl(struct soap* soap, struct _tds__GetW
 /** Web service operation '__tds__GetCapabilities' (returns SOAP_OK or error code) */
 SOAP_FMAC5 int SOAP_FMAC6 __tds__GetCapabilities(struct soap* soap, struct _tds__GetCapabilities *tds__GetCapabilities, struct _tds__GetCapabilitiesResponse *tds__GetCapabilitiesResponse)
 {
-    printf("---------------------------__tds__GetCapabilities---------------------------------------\n");
-
-    if (tds__GetCapabilities->Category[0] == tt__CapabilityCategory__Device ||
-        tds__GetCapabilities->Category[0] == tt__CapabilityCategory__All) {
-        //<Capabilities>
-        tds__GetCapabilitiesResponse->Capabilities = (struct tt__Capabilities *)soap_malloc(soap, sizeof(struct tt__Capabilities));
-        memset(tds__GetCapabilitiesResponse->Capabilities, 0, sizeof(struct tt__Capabilities));
-
-        //<Device>
-        tds__GetCapabilitiesResponse->Capabilities->Device = (struct tt__DeviceCapabilities *)soap_malloc(soap, sizeof(struct tt__DeviceCapabilities));
-        memset(tds__GetCapabilitiesResponse->Capabilities->Device, 0, sizeof(struct tt__DeviceCapabilities));
-        tds__GetCapabilitiesResponse->Capabilities->Device->XAddr = (char *)soap_malloc(soap, sizeof(char) * 100 );
-        memset(tds__GetCapabilitiesResponse->Capabilities->Device->XAddr, 0, sizeof(char) * 100);
-        sprintf(tds__GetCapabilitiesResponse->Capabilities->Device->XAddr, "http://%s:%d/onvif/device_service", ONVIF_TCP_IP, ONVIF_TCP_PORT);
-        //<Device><Network>
-        tds__GetCapabilitiesResponse->Capabilities->Device->Network = (struct tt__NetworkCapabilities *)soap_malloc(soap, sizeof(struct tt__NetworkCapabilities ));
-        memset(tds__GetCapabilitiesResponse->Capabilities->Device->Network, 0, sizeof(struct tt__NetworkCapabilities ));
-        tds__GetCapabilitiesResponse->Capabilities->Device->Network->IPFilter = (enum xsd__boolean *)soap_malloc(soap, sizeof(enum xsd__boolean));
-        *(tds__GetCapabilitiesResponse->Capabilities->Device->Network->IPFilter) = xsd__boolean__false_;                //关闭功能 xsd__boolean__true_
-        tds__GetCapabilitiesResponse->Capabilities->Device->Network->ZeroConfiguration= (enum xsd__boolean *)soap_malloc(soap, sizeof(enum xsd__boolean));
-        *(tds__GetCapabilitiesResponse->Capabilities->Device->Network->ZeroConfiguration) = xsd__boolean__false_;        //打开功能 xsd__boolean__false_
-        tds__GetCapabilitiesResponse->Capabilities->Device->Network->IPVersion6 = (enum xsd__boolean *)soap_malloc(soap, sizeof(enum xsd__boolean));
-        *(tds__GetCapabilitiesResponse->Capabilities->Device->Network->IPVersion6) = xsd__boolean__false_;              //关闭功能 xsd__boolean__true_
-        tds__GetCapabilitiesResponse->Capabilities->Device->Network->DynDNS = (enum xsd__boolean *)soap_malloc(soap, sizeof(enum xsd__boolean));
-        *(tds__GetCapabilitiesResponse->Capabilities->Device->Network->DynDNS) = xsd__boolean__false_;                   //打开功能 xsd__boolean__false_
-        //<Device><Network><Extension>
-        tds__GetCapabilitiesResponse->Capabilities->Device->Network->Extension = (struct tt__NetworkCapabilitiesExtension *)soap_malloc(soap, sizeof(struct tt__NetworkCapabilitiesExtension));
-        memset(tds__GetCapabilitiesResponse->Capabilities->Device->Network->Extension, 0, sizeof(struct tt__NetworkCapabilitiesExtension ));
-        tds__GetCapabilitiesResponse->Capabilities->Device->Network->Extension->__size = 1;
-        tds__GetCapabilitiesResponse->Capabilities->Device->Network->Extension->Dot11Configuration = (enum xsd__boolean *)soap_malloc(soap, sizeof(enum xsd__boolean));
-        *(tds__GetCapabilitiesResponse->Capabilities->Device->Network->Extension->Dot11Configuration) = xsd__boolean__false_;
-
-        //<Device><System>
-        tds__GetCapabilitiesResponse->Capabilities->Device->System = (struct tt__SystemCapabilities *)soap_malloc(soap, sizeof(struct tt__SystemCapabilities));
-        memset( tds__GetCapabilitiesResponse->Capabilities->Device->System, 0, sizeof(struct tt__SystemCapabilities));
-        tds__GetCapabilitiesResponse->Capabilities->Device->System->DiscoveryResolve = xsd__boolean__true_;
-        tds__GetCapabilitiesResponse->Capabilities->Device->System->DiscoveryBye     = xsd__boolean__true_;
-        tds__GetCapabilitiesResponse->Capabilities->Device->System->RemoteDiscovery  = xsd__boolean__true_;
-        tds__GetCapabilitiesResponse->Capabilities->Device->System->SystemBackup     = xsd__boolean__true_;
-        tds__GetCapabilitiesResponse->Capabilities->Device->System->SystemLogging    = xsd__boolean__false_;
-        tds__GetCapabilitiesResponse->Capabilities->Device->System->FirmwareUpgrade  = xsd__boolean__true_;
-        tds__GetCapabilitiesResponse->Capabilities->Device->System->__sizeSupportedVersions = 1;
-        tds__GetCapabilitiesResponse->Capabilities->Device->System->SupportedVersions = (struct tt__OnvifVersion *)soap_malloc(soap, sizeof(struct tt__OnvifVersion));
-        tds__GetCapabilitiesResponse->Capabilities->Device->System->SupportedVersions->Major = 1;
-        tds__GetCapabilitiesResponse->Capabilities->Device->System->SupportedVersions->Minor = 10;
-        tds__GetCapabilitiesResponse->Capabilities->Device->System->Extension = (struct tt__SystemCapabilitiesExtension *)soap_malloc(soap, sizeof(struct tt__SystemCapabilitiesExtension));
-        memset( tds__GetCapabilitiesResponse->Capabilities->Device->System->Extension, 0, sizeof(struct tt__SystemCapabilitiesExtension));
-        tds__GetCapabilitiesResponse->Capabilities->Device->System->Extension->HttpFirmwareUpgrade = (enum xsd__boolean *)soap_malloc(soap, sizeof(enum xsd__boolean));
-        *(tds__GetCapabilitiesResponse->Capabilities->Device->System->Extension->HttpFirmwareUpgrade) = xsd__boolean__true_;
-        tds__GetCapabilitiesResponse->Capabilities->Device->System->Extension->HttpSystemBackup = (enum xsd__boolean *)soap_malloc(soap, sizeof(enum xsd__boolean));
-        *(tds__GetCapabilitiesResponse->Capabilities->Device->System->Extension->HttpSystemBackup) = xsd__boolean__true_;
-        tds__GetCapabilitiesResponse->Capabilities->Device->System->Extension->HttpSystemLogging = (enum xsd__boolean *)soap_malloc(soap, sizeof(enum xsd__boolean));
-        *(tds__GetCapabilitiesResponse->Capabilities->Device->System->Extension->HttpSystemLogging) = xsd__boolean__false_;
-        tds__GetCapabilitiesResponse->Capabilities->Device->System->Extension->HttpSupportInformation = (enum xsd__boolean *)soap_malloc(soap, sizeof(enum xsd__boolean));
-        *(tds__GetCapabilitiesResponse->Capabilities->Device->System->Extension->HttpSupportInformation) = xsd__boolean__true_;
-
-        // 设备IO的一些支持
-        //<Device><IO>
-       /* tds__GetCapabilitiesResponse->Capabilities->Device->IO = (struct tt__IOCapabilities *)soap_malloc(soap, sizeof(struct tt__IOCapabilities));
-        memset(tds__GetCapabilitiesResponse->Capabilities->Device->IO, 0, sizeof(struct tt__IOCapabilities));
-        tds__GetCapabilitiesResponse->Capabilities->Device->IO->InputConnectors = (int *)soap_malloc(soap, sizeof(int));
-        *(tds__GetCapabilitiesResponse->Capabilities->Device->IO->InputConnectors) = 1;
-        tds__GetCapabilitiesResponse->Capabilities->Device->IO->RelayOutputs = (int *)soap_malloc(soap, sizeof(int));
-        *(tds__GetCapabilitiesResponse->Capabilities->Device->IO->RelayOutputs) = 1;*/
-
-
-        //<Device><Security>
-        tds__GetCapabilitiesResponse->Capabilities->Device->Security = (struct tt__SecurityCapabilities *)soap_malloc(soap, sizeof(struct tt__SecurityCapabilities));
-        memset(tds__GetCapabilitiesResponse->Capabilities->Device->Security, 0, sizeof(struct tt__SecurityCapabilities));
-        tds__GetCapabilitiesResponse->Capabilities->Device->Security->TLS1_x002e1          = xsd__boolean__false_;
-        tds__GetCapabilitiesResponse->Capabilities->Device->Security->TLS1_x002e2          = xsd__boolean__false_;
-        tds__GetCapabilitiesResponse->Capabilities->Device->Security->OnboardKeyGeneration = xsd__boolean__false_;
-        tds__GetCapabilitiesResponse->Capabilities->Device->Security->AccessPolicyConfig   = xsd__boolean__false_;
-        tds__GetCapabilitiesResponse->Capabilities->Device->Security->X_x002e509Token      = xsd__boolean__false_;
-        tds__GetCapabilitiesResponse->Capabilities->Device->Security->SAMLToken            = xsd__boolean__false_;
-        tds__GetCapabilitiesResponse->Capabilities->Device->Security->KerberosToken        = xsd__boolean__false_;
-        tds__GetCapabilitiesResponse->Capabilities->Device->Security->RELToken             = xsd__boolean__false_;
-        tds__GetCapabilitiesResponse->Capabilities->Device->Security->Extension = (struct tt__SecurityCapabilitiesExtension *)soap_malloc(soap, sizeof(struct tt__SecurityCapabilitiesExtension));
-        memset(tds__GetCapabilitiesResponse->Capabilities->Device->Security->Extension, 0, sizeof(struct tt__SecurityCapabilitiesExtension));
-        tds__GetCapabilitiesResponse->Capabilities->Device->Security->Extension->Extension =
-                (struct tt__SecurityCapabilitiesExtension2 *)soap_malloc(soap, sizeof(struct tt__SecurityCapabilitiesExtension2));
-        memset(tds__GetCapabilitiesResponse->Capabilities->Device->Security->Extension->Extension, 0, sizeof(struct tt__SecurityCapabilitiesExtension2));
-        tds__GetCapabilitiesResponse->Capabilities->Device->Security->Extension->Extension->Dot1X = xsd__boolean__false_;
-        tds__GetCapabilitiesResponse->Capabilities->Device->Security->Extension->Extension->RemoteUserHandling = xsd__boolean__false_;
-    }
-
-    //event
-    if (tds__GetCapabilities->Category[0] == tt__CapabilityCategory__Events ||
-        tds__GetCapabilities->Category[0] == tt__CapabilityCategory__All) {
-        tds__GetCapabilitiesResponse->Capabilities->Events = (struct tt__EventCapabilities *)soap_malloc(soap, sizeof(struct tt__EventCapabilities));
-        memset(tds__GetCapabilitiesResponse->Capabilities->Events, 0, sizeof(struct tt__EventCapabilities));
-        tds__GetCapabilitiesResponse->Capabilities->Events->XAddr = (char *)soap_malloc(soap, sizeof(char) * 100 );
-        memset(tds__GetCapabilitiesResponse->Capabilities->Events->XAddr, '\0', sizeof(char) * 100);
-        sprintf(tds__GetCapabilitiesResponse->Capabilities->Events->XAddr, "http://%s:%d/onvif/event_service", ONVIF_TCP_IP, ONVIF_TCP_PORT);
-        tds__GetCapabilitiesResponse->Capabilities->Events->WSSubscriptionPolicySupport = xsd__boolean__true_;
-        tds__GetCapabilitiesResponse->Capabilities->Events->WSPullPointSupport = xsd__boolean__true_;
-        tds__GetCapabilitiesResponse->Capabilities->Events->WSPausableSubscriptionManagerInterfaceSupport = xsd__boolean__false_;
-    }
-
-    //image
-    if (tds__GetCapabilities->Category[0] == tt__CapabilityCategory__Imaging ||
-        tds__GetCapabilities->Category[0] == tt__CapabilityCategory__All) {
-        tds__GetCapabilitiesResponse->Capabilities->Imaging = (struct tt__ImagingCapabilities *)soap_malloc(soap, sizeof(struct tt__ImagingCapabilities));
-        memset(tds__GetCapabilitiesResponse->Capabilities->Imaging, 0, sizeof(struct tt__ImagingCapabilities));
-        tds__GetCapabilitiesResponse->Capabilities->Imaging->XAddr = (char *)soap_malloc(soap, sizeof(char) * 100 );
-        memset(tds__GetCapabilitiesResponse->Capabilities->Imaging->XAddr, 0, sizeof(char) * 100);
-        sprintf(tds__GetCapabilitiesResponse->Capabilities->Imaging->XAddr, "http://%s:%d/onvif/image_service", ONVIF_TCP_IP, ONVIF_TCP_PORT);
-    }
-
-    //ptz
-    tds__GetCapabilitiesResponse->Capabilities->PTZ = (struct tt__PTZCapabilities *)soap_malloc(soap, sizeof (struct tt__PTZCapabilities));
-    memset(tds__GetCapabilitiesResponse->Capabilities->PTZ, 0, sizeof (struct tt__PTZCapabilities));
-    tds__GetCapabilitiesResponse->Capabilities->PTZ->XAddr = (char *)soap_malloc(soap, sizeof(char) * 100);
-    memset(tds__GetCapabilitiesResponse->Capabilities->PTZ->XAddr, 0, sizeof(char) * 100);
-    sprintf(tds__GetCapabilitiesResponse->Capabilities->PTZ->XAddr, "http://%s:%d/onvif/ptz_service", ONVIF_TCP_IP, ONVIF_TCP_PORT);
-
-    //Media
-    if (tds__GetCapabilities->Category[0] == tt__CapabilityCategory__Media ||
-        tds__GetCapabilities->Category[0] == tt__CapabilityCategory__All) {
-        tds__GetCapabilitiesResponse->Capabilities->Media = (struct tt__MediaCapabilities *)soap_malloc(soap, sizeof(struct tt__MediaCapabilities));
-        memset(tds__GetCapabilitiesResponse->Capabilities->Media, 0, sizeof(struct tt__MediaCapabilities));
-        tds__GetCapabilitiesResponse->Capabilities->Media->XAddr = (char *)soap_malloc(soap, sizeof(char) * 100 );
-        memset(tds__GetCapabilitiesResponse->Capabilities->Media->XAddr, '\0', sizeof(char) * 100);
-        sprintf(tds__GetCapabilitiesResponse->Capabilities->Media->XAddr, "http://%s:%d/onvif/media_service", ONVIF_TCP_IP, ONVIF_TCP_PORT);
-        //<Media><StreamingCapabilities>
-        tds__GetCapabilitiesResponse->Capabilities->Media->StreamingCapabilities = (struct tt__RealTimeStreamingCapabilities *)soap_malloc(soap, sizeof(struct tt__RealTimeStreamingCapabilities));
-        memset(tds__GetCapabilitiesResponse->Capabilities->Media->StreamingCapabilities, 0, sizeof(struct tt__RealTimeStreamingCapabilities));
-        tds__GetCapabilitiesResponse->Capabilities->Media->StreamingCapabilities->RTPMulticast = (enum xsd__boolean *)soap_malloc(soap, sizeof(enum xsd__boolean));
-        *(tds__GetCapabilitiesResponse->Capabilities->Media->StreamingCapabilities->RTPMulticast) = xsd__boolean__false_;
-        tds__GetCapabilitiesResponse->Capabilities->Media->StreamingCapabilities->RTP_USCORERTSP_USCORETCP = (enum xsd__boolean *)soap_malloc(soap, sizeof(enum xsd__boolean));
-        *(tds__GetCapabilitiesResponse->Capabilities->Media->StreamingCapabilities->RTP_USCORERTSP_USCORETCP) = xsd__boolean__true_;
-        tds__GetCapabilitiesResponse->Capabilities->Media->StreamingCapabilities->RTP_USCORETCP = (enum xsd__boolean *)soap_malloc(soap, sizeof(enum xsd__boolean));
-        *(tds__GetCapabilitiesResponse->Capabilities->Media->StreamingCapabilities->RTP_USCORETCP) = xsd__boolean__true_;
-    }
 
     return 0;
 }
@@ -1123,63 +887,6 @@ SOAP_FMAC5 int SOAP_FMAC6 __tds__SetDynamicDNS(struct soap* soap, struct _tds__S
 /** Web service operation '__tds__GetNetworkInterfaces' (returns SOAP_OK or error code) */
 SOAP_FMAC5 int SOAP_FMAC6 __tds__GetNetworkInterfaces(struct soap* soap, struct _tds__GetNetworkInterfaces *tds__GetNetworkInterfaces, struct _tds__GetNetworkInterfacesResponse *tds__GetNetworkInterfacesResponse)
 {
-    printf("------------------------------__tds__GetNetworkInterfaces-------------------------------------\n");
-
-    tds__GetNetworkInterfacesResponse->__sizeNetworkInterfaces = 1;
-    tds__GetNetworkInterfacesResponse->NetworkInterfaces = (struct tt__NetworkInterface *)soap_malloc(soap, sizeof(struct tt__NetworkInterface));
-    memset(tds__GetNetworkInterfacesResponse->NetworkInterfaces, 0, sizeof(struct tt__NetworkInterface));
-
-    //<NetworkInterfaces>
-    tds__GetNetworkInterfacesResponse->NetworkInterfaces->token = (char *)soap_malloc(soap, sizeof(char) * 32);
-    memset(tds__GetNetworkInterfacesResponse->NetworkInterfaces->token, 0, sizeof(char) * 32);
-    strcpy(tds__GetNetworkInterfacesResponse->NetworkInterfaces->token, "eth0");
-    tds__GetNetworkInterfacesResponse->NetworkInterfaces->Enabled = xsd__boolean__true_;
-    //<NetworkInterfaces><Info>
-    tds__GetNetworkInterfacesResponse->NetworkInterfaces->Info = (struct tt__NetworkInterfaceInfo *)soap_malloc(soap, sizeof(struct tt__NetworkInterfaceInfo));
-    memset(tds__GetNetworkInterfacesResponse->NetworkInterfaces->Info, 0, sizeof(struct tt__NetworkInterfaceInfo));
-    tds__GetNetworkInterfacesResponse->NetworkInterfaces->Info->Name = (char *)soap_malloc(soap, sizeof(char) * 32);
-    memset(tds__GetNetworkInterfacesResponse->NetworkInterfaces->Info->Name, 0, sizeof(char) * 32);
-    strcpy(tds__GetNetworkInterfacesResponse->NetworkInterfaces->Info->Name, "eth0");
-    tds__GetNetworkInterfacesResponse->NetworkInterfaces->Info->HwAddress = (char *)soap_malloc(soap, sizeof(char) * 32);
-    memset(tds__GetNetworkInterfacesResponse->NetworkInterfaces->Info->HwAddress, 0, sizeof(char) * 32);
-    strcpy(tds__GetNetworkInterfacesResponse->NetworkInterfaces->Info->HwAddress, "4E:61:21:AF:73:BD");
-    tds__GetNetworkInterfacesResponse->NetworkInterfaces->Info->MTU = (int *)soap_malloc(soap, sizeof(int));
-    *(tds__GetNetworkInterfacesResponse->NetworkInterfaces->Info->MTU) = 1500;
-
-    //<NetworkInterfaces><Link>
-    tds__GetNetworkInterfacesResponse->NetworkInterfaces->Link = (struct tt__NetworkInterfaceLink *)soap_malloc(soap, sizeof(struct tt__NetworkInterfaceLink));
-    memset(tds__GetNetworkInterfacesResponse->NetworkInterfaces->Link, 0, sizeof(struct tt__NetworkInterfaceLink));
-    //<NetworkInterfaces><Link><AdminSettings>
-    tds__GetNetworkInterfacesResponse->NetworkInterfaces->Link->AdminSettings = (struct tt__NetworkInterfaceConnectionSetting *)soap_malloc(soap, sizeof(struct tt__NetworkInterfaceConnectionSetting));
-    memset(tds__GetNetworkInterfacesResponse->NetworkInterfaces->Link->AdminSettings, 0, sizeof(struct tt__NetworkInterfaceConnectionSetting));
-    tds__GetNetworkInterfacesResponse->NetworkInterfaces->Link->AdminSettings->AutoNegotiation = xsd__boolean__false_;
-    tds__GetNetworkInterfacesResponse->NetworkInterfaces->Link->AdminSettings->Speed = 100;
-    tds__GetNetworkInterfacesResponse->NetworkInterfaces->Link->AdminSettings->Duplex = tt__Duplex__Full;
-
-    //<NetworkInterfaces><Link><OperSettings>
-    tds__GetNetworkInterfacesResponse->NetworkInterfaces->Link->OperSettings = (struct tt__NetworkInterfaceConnectionSetting *)soap_malloc(soap, sizeof(struct tt__NetworkInterfaceConnectionSetting));
-    memset(tds__GetNetworkInterfacesResponse->NetworkInterfaces->Link->OperSettings, 0, sizeof(struct tt__NetworkInterfaceConnectionSetting));
-    tds__GetNetworkInterfacesResponse->NetworkInterfaces->Link->OperSettings->AutoNegotiation = xsd__boolean__false_;
-    tds__GetNetworkInterfacesResponse->NetworkInterfaces->Link->OperSettings->Speed = 100;
-    tds__GetNetworkInterfacesResponse->NetworkInterfaces->Link->OperSettings->Duplex = tt__Duplex__Full;
-    tds__GetNetworkInterfacesResponse->NetworkInterfaces->Link->InterfaceType = 6;
-
-    //<NetworkInterfaces><IPv4>
-    tds__GetNetworkInterfacesResponse->NetworkInterfaces->IPv4 = (struct tt__IPv4NetworkInterface *)soap_malloc(soap, sizeof(struct tt__IPv4NetworkInterface));
-    memset(tds__GetNetworkInterfacesResponse->NetworkInterfaces->IPv4, 0, sizeof(struct tt__IPv4NetworkInterface));
-    tds__GetNetworkInterfacesResponse->NetworkInterfaces->IPv4->Enabled = xsd__boolean__true_;
-    tds__GetNetworkInterfacesResponse->NetworkInterfaces->IPv4->Config = (struct tt__IPv4Configuration *)soap_malloc(soap, sizeof(struct tt__IPv4Configuration));
-    memset(tds__GetNetworkInterfacesResponse->NetworkInterfaces->IPv4->Config, 0, sizeof(struct tt__IPv4Configuration));
-    tds__GetNetworkInterfacesResponse->NetworkInterfaces->IPv4->Config->__sizeManual = 1;
-    tds__GetNetworkInterfacesResponse->NetworkInterfaces->IPv4->Config->Manual =
-            (struct tt__PrefixedIPv4Address *)soap_malloc(soap, sizeof(struct tt__PrefixedIPv4Address) * tds__GetNetworkInterfacesResponse->NetworkInterfaces->IPv4->Config->__sizeManual);
-    memset(tds__GetNetworkInterfacesResponse->NetworkInterfaces->IPv4->Config->Manual, 0,
-           sizeof(struct tt__PrefixedIPv4Address) * tds__GetNetworkInterfacesResponse->NetworkInterfaces->IPv4->Config->__sizeManual);
-    tds__GetNetworkInterfacesResponse->NetworkInterfaces->IPv4->Config->Manual->Address = (char *)soap_malloc(soap, sizeof(char) * 32);
-    memset(tds__GetNetworkInterfacesResponse->NetworkInterfaces->IPv4->Config->Manual->Address, '\0', sizeof(char) * 32);
-    strcpy(tds__GetNetworkInterfacesResponse->NetworkInterfaces->IPv4->Config->Manual->Address, ONVIF_TCP_IP);
-    tds__GetNetworkInterfacesResponse->NetworkInterfaces->IPv4->Config->Manual->PrefixLength = 24;
-    tds__GetNetworkInterfacesResponse->NetworkInterfaces->IPv4->Config->DHCP = xsd__boolean__false_;
 
     return SOAP_OK;
 }
@@ -2774,31 +2481,8 @@ SOAP_FMAC5 int SOAP_FMAC6 __trt__GetServiceCapabilities(struct soap* soap, struc
 /** Web service operation '__trt__GetVideoSources' (returns SOAP_OK or error code) */
 SOAP_FMAC5 int SOAP_FMAC6 __trt__GetVideoSources(struct soap* soap, struct _trt__GetVideoSources *trt__GetVideoSources, struct _trt__GetVideoSourcesResponse *trt__GetVideoSourcesResponse)
 {
-    printf("-----------------------------__trt__GetVideoSources------------------------------------");
 
-    /*int s32Ret = soap_wsse_verify_Password(soap, "123456");
-    if (SOAP_OK != s32Ret)
-    {
-        return s32Ret;
-    }
-    printf("soap_wsse_verify_Password is success!\n");*/
-
-    int size = 1;
-    trt__GetVideoSourcesResponse->__sizeVideoSources = size;
-    trt__GetVideoSourcesResponse->VideoSources = (struct tt__VideoSource *)soap_malloc(soap, sizeof(struct tt__VideoSource) * size);
-    memset(trt__GetVideoSourcesResponse->VideoSources, '\0', sizeof(struct tt__VideoSource) * trt__GetVideoSourcesResponse->__sizeVideoSources);
-
-    trt__GetVideoSourcesResponse->VideoSources->token = (char *)soap_malloc(soap, sizeof(char) * 32);
-    memset(trt__GetVideoSourcesResponse->VideoSources->token, '\0', sizeof(char) * 32);
-    strcpy(trt__GetVideoSourcesResponse->VideoSources->token, "000");
-
-    trt__GetVideoSourcesResponse->VideoSources->Resolution = (struct tt__VideoResolution *)soap_malloc(soap, sizeof(struct tt__VideoResolution));
-    memset(trt__GetVideoSourcesResponse->VideoSources->Resolution, '\0', sizeof(struct tt__VideoResolution));
-    trt__GetVideoSourcesResponse->VideoSources->Resolution->Width = ONVIF_FRAME_WIDTH;
-    trt__GetVideoSourcesResponse->VideoSources->Resolution->Height = ONVIF_FRAME_HEIGHT;
-    trt__GetVideoSourcesResponse->VideoSources->Framerate = 25;
-
-    return SOAP_OK;
+    return 0;
 }
 
 /** Web service operation '__trt__GetAudioSources' (returns SOAP_OK or error code) */
@@ -2822,69 +2506,6 @@ SOAP_FMAC5 int SOAP_FMAC6 __trt__CreateProfile(struct soap* soap, struct _trt__C
 /** Web service operation '__trt__GetProfile' (returns SOAP_OK or error code) */
 SOAP_FMAC5 int SOAP_FMAC6 __trt__GetProfile(struct soap* soap, struct _trt__GetProfile *trt__GetProfile, struct _trt__GetProfileResponse *trt__GetProfileResponse)
 {
-    trt__GetProfileResponse->Profile = (struct tt__Profile *)soap_malloc(soap, sizeof(struct tt__Profile));
-    memset(trt__GetProfileResponse->Profile, '\0', sizeof(struct tt__Profile));
-
-    //<profiles><name>和<profiles><token>
-    trt__GetProfileResponse->Profile->Name = (char *)soap_malloc(soap, sizeof(char) * 32);
-    memset(trt__GetProfileResponse->Profile->Name, '\0', sizeof(char) * 32);
-    strcpy(trt__GetProfileResponse->Profile->Name, "MediaProfile_Name");
-    trt__GetProfileResponse->Profile->token = (char *)soap_malloc(soap, sizeof(char) * 32);
-    memset(trt__GetProfileResponse->Profile->token, '\0', sizeof(char) * 32);
-    strcpy(trt__GetProfileResponse->Profile->token, "MediaProfile000");
-    trt__GetProfileResponse->Profile->fixed = (enum xsd__boolean *)soap_malloc(soap, sizeof(enum xsd__boolean));
-    *(trt__GetProfileResponse->Profile->fixed) = xsd__boolean__true_;
-
-    //<VideoSourceConfiguration><name>和<VideoSourceConfiguration><token>
-    trt__GetProfileResponse->Profile->VideoSourceConfiguration = (struct tt__VideoSourceConfiguration *)soap_malloc(soap,sizeof(struct tt__VideoSourceConfiguration));
-    memset(trt__GetProfileResponse->Profile->VideoSourceConfiguration, 0, sizeof(struct tt__VideoSourceConfiguration));
-    trt__GetProfileResponse->Profile->VideoSourceConfiguration->Name = (char *)soap_malloc(soap,sizeof(char) * 32);
-    memset(trt__GetProfileResponse->Profile->VideoSourceConfiguration->Name, '\0', sizeof(char) * 32);
-    strcpy(trt__GetProfileResponse->Profile->VideoSourceConfiguration->Name, "SourceConfig_Name");
-    trt__GetProfileResponse->Profile->VideoSourceConfiguration->token = (char *)soap_malloc(soap,sizeof(char) * 32);
-    memset(trt__GetProfileResponse->Profile->VideoSourceConfiguration->token, '\0', sizeof(char) * 32);
-    strcpy(trt__GetProfileResponse->Profile->VideoSourceConfiguration->token, "000");
-    trt__GetProfileResponse->Profile->VideoSourceConfiguration->SourceToken = (char *)soap_malloc(soap,sizeof(char) * 32);
-    memset(trt__GetProfileResponse->Profile->VideoSourceConfiguration->SourceToken, '\0', sizeof(char) * 32);
-    strcpy(trt__GetProfileResponse->Profile->VideoSourceConfiguration->SourceToken, "000");
-    trt__GetProfileResponse->Profile->VideoSourceConfiguration->UseCount = 1;
-    //<VideoSourceConfiguration><Bounds>
-    trt__GetProfileResponse->Profile->VideoSourceConfiguration->Bounds = (struct tt__IntRectangle *)soap_malloc(soap, sizeof(struct tt__IntRectangle));
-    memset(trt__GetProfileResponse->Profile->VideoSourceConfiguration->Bounds, 0, sizeof(struct tt__IntRectangle));
-    trt__GetProfileResponse->Profile->VideoSourceConfiguration->Bounds->x = 0;
-    trt__GetProfileResponse->Profile->VideoSourceConfiguration->Bounds->y = 0;
-    trt__GetProfileResponse->Profile->VideoSourceConfiguration->Bounds->width = ONVIF_FRAME_WIDTH;
-    trt__GetProfileResponse->Profile->VideoSourceConfiguration->Bounds->height = ONVIF_FRAME_HEIGHT;
-
-    //<VideoEncoderConfiguration>
-    trt__GetProfileResponse->Profile->VideoEncoderConfiguration = (struct tt__VideoEncoderConfiguration *)soap_malloc(soap, sizeof(struct tt__VideoEncoderConfiguration)) ;
-    memset(trt__GetProfileResponse->Profile->VideoEncoderConfiguration, '\0', sizeof(struct tt__VideoEncoderConfiguration));
-    trt__GetProfileResponse->Profile->VideoEncoderConfiguration->Name = (char *)soap_malloc(soap, sizeof(char)*32);
-    memset(trt__GetProfileResponse->Profile->VideoEncoderConfiguration->Name, '\0', sizeof(char)*32);
-    strcpy(trt__GetProfileResponse->Profile->VideoEncoderConfiguration->Name, "EncoderConfig_Name");
-    trt__GetProfileResponse->Profile->VideoEncoderConfiguration->token = (char *)soap_malloc(soap, sizeof(char)*32);
-    memset(trt__GetProfileResponse->Profile->VideoEncoderConfiguration->token, '\0', sizeof(char)*32);
-    strcpy(trt__GetProfileResponse->Profile->VideoEncoderConfiguration->token, "000");
-    trt__GetProfileResponse->Profile->VideoEncoderConfiguration->UseCount = 1;
-    trt__GetProfileResponse->Profile->VideoEncoderConfiguration->Encoding = tt__VideoEncoding__H264;
-    //<VideoEncoderConfiguration><Resolution>、<RateControl>
-    trt__GetProfileResponse->Profile->VideoEncoderConfiguration->Resolution = (struct tt__VideoResolution *)soap_malloc(soap, sizeof(struct tt__VideoResolution));
-    memset(trt__GetProfileResponse->Profile->VideoEncoderConfiguration->Resolution, '\0', sizeof(struct tt__VideoResolution));
-    trt__GetProfileResponse->Profile->VideoEncoderConfiguration->Resolution->Width = ONVIF_FRAME_WIDTH;
-    trt__GetProfileResponse->Profile->VideoEncoderConfiguration->Resolution->Height = ONVIF_FRAME_HEIGHT;
-    trt__GetProfileResponse->Profile->VideoEncoderConfiguration->Quality = 6;
-    //<VideoEncoderConfiguration><RateControl>
-    trt__GetProfileResponse->Profile->VideoEncoderConfiguration->RateControl = (struct tt__VideoRateControl *)soap_malloc(soap, sizeof(struct tt__VideoRateControl));
-    memset(trt__GetProfileResponse->Profile->VideoEncoderConfiguration->RateControl, '\0', sizeof(struct tt__VideoRateControl));
-    trt__GetProfileResponse->Profile->VideoEncoderConfiguration->RateControl->FrameRateLimit = 25;
-    trt__GetProfileResponse->Profile->VideoEncoderConfiguration->RateControl->EncodingInterval = 1;
-    trt__GetProfileResponse->Profile->VideoEncoderConfiguration->RateControl->BitrateLimit = 4096;
-    //<VideoEncoderConfiguration><H264>
-    trt__GetProfileResponse->Profile->VideoEncoderConfiguration->H264 = (struct tt__H264Configuration *)soap_malloc(soap, sizeof(struct tt__H264Configuration));
-    memset(trt__GetProfileResponse->Profile->VideoEncoderConfiguration->H264, '\0', sizeof(struct tt__H264Configuration));
-    trt__GetProfileResponse->Profile->VideoEncoderConfiguration->H264->GovLength = 60;
-    trt__GetProfileResponse->Profile->VideoEncoderConfiguration->H264->H264Profile = tt__H264Profile__High;
-
 
     return 0;
 }
@@ -2892,112 +2513,6 @@ SOAP_FMAC5 int SOAP_FMAC6 __trt__GetProfile(struct soap* soap, struct _trt__GetP
 /** Web service operation '__trt__GetProfiles' (returns SOAP_OK or error code) */
 SOAP_FMAC5 int SOAP_FMAC6 __trt__GetProfiles(struct soap* soap, struct _trt__GetProfiles *trt__GetProfiles, struct _trt__GetProfilesResponse *trt__GetProfilesResponse)
 {
-    printf("-------------------------------__trt__GetProfiles---------------------------------\n");
-
-    trt__GetProfilesResponse->__sizeProfiles = 1;
-    trt__GetProfilesResponse->Profiles = (struct tt__Profile *)soap_malloc(soap, sizeof(struct tt__Profile) * trt__GetProfilesResponse->__sizeProfiles);
-    memset(trt__GetProfilesResponse->Profiles, '\0', sizeof(struct tt__Profile) * trt__GetProfilesResponse->__sizeProfiles);
-
-    //<profiles><name>和<profiles><token>
-    int i = 0;
-    trt__GetProfilesResponse->Profiles[i].Name = (char *)soap_malloc(soap, sizeof(char) * 32);
-    memset(trt__GetProfilesResponse->Profiles[i].Name, '\0', sizeof(char) * 32);
-    strcpy(trt__GetProfilesResponse->Profiles[i].Name, "MediaProfile_Name");
-    trt__GetProfilesResponse->Profiles[i].token = (char *)soap_malloc(soap, sizeof(char) * 32);
-    memset(trt__GetProfilesResponse->Profiles[i].token, '\0', sizeof(char) * 32);
-    strcpy(trt__GetProfilesResponse->Profiles[i].token, "MediaProfile000");
-
-    /*trt__GetProfilesResponse->Profiles[i].fixed = (enum xsd__boolean *)soap_malloc(soap, sizeof(int));
-    memset(trt__GetProfilesResponse->Profiles[i].fixed, 0, sizeof(int));
-    *(trt__GetProfilesResponse->Profiles[i].fixed) = xsd__boolean__false_;
-    trt__GetProfilesResponse->Profiles[i].__anyAttribute = NULL;*/
-
-    //<VideoSourceConfiguration><name>和<VideoSourceConfiguration><token>
-    trt__GetProfilesResponse->Profiles[i].VideoSourceConfiguration = (struct tt__VideoSourceConfiguration *)soap_malloc(soap,sizeof(struct tt__VideoSourceConfiguration));
-    memset(trt__GetProfilesResponse->Profiles[i].VideoSourceConfiguration, 0, sizeof(struct tt__VideoSourceConfiguration));
-    trt__GetProfilesResponse->Profiles[i].VideoSourceConfiguration->Name = (char *)soap_malloc(soap,sizeof(char) * 32);
-    memset(trt__GetProfilesResponse->Profiles[i].VideoSourceConfiguration->Name, '\0', sizeof(char) * 32);
-    strcpy(trt__GetProfilesResponse->Profiles[i].VideoSourceConfiguration->Name, "SourceConfig_Name");
-    trt__GetProfilesResponse->Profiles[i].VideoSourceConfiguration->token = (char *)soap_malloc(soap,sizeof(char) * 32);
-    memset(trt__GetProfilesResponse->Profiles[i].VideoSourceConfiguration->token, '\0', sizeof(char) * 32);
-    strcpy(trt__GetProfilesResponse->Profiles[i].VideoSourceConfiguration->token, "000");
-    trt__GetProfilesResponse->Profiles[i].VideoSourceConfiguration->SourceToken = (char *)soap_malloc(soap,sizeof(char) * 32);
-    memset(trt__GetProfilesResponse->Profiles[i].VideoSourceConfiguration->SourceToken, '\0', sizeof(char) * 32);
-    strcpy(trt__GetProfilesResponse->Profiles[i].VideoSourceConfiguration->SourceToken, "000");
-    trt__GetProfilesResponse->Profiles[i].VideoSourceConfiguration->UseCount = 1;
-    //<VideoSourceConfiguration><Bounds>
-    trt__GetProfilesResponse->Profiles[i].VideoSourceConfiguration->Bounds = (struct tt__IntRectangle *)soap_malloc(soap, sizeof(struct tt__IntRectangle));
-    memset(trt__GetProfilesResponse->Profiles[i].VideoSourceConfiguration->Bounds, 0, sizeof(struct tt__IntRectangle));
-    trt__GetProfilesResponse->Profiles[i].VideoSourceConfiguration->Bounds->x = 0;
-    trt__GetProfilesResponse->Profiles[i].VideoSourceConfiguration->Bounds->y = 0;
-    trt__GetProfilesResponse->Profiles[i].VideoSourceConfiguration->Bounds->width = ONVIF_FRAME_WIDTH;
-    trt__GetProfilesResponse->Profiles[i].VideoSourceConfiguration->Bounds->height = ONVIF_FRAME_HEIGHT;
-
-    //<VideoEncoderConfiguration>
-    trt__GetProfilesResponse->Profiles[i].VideoEncoderConfiguration = (struct tt__VideoEncoderConfiguration *)soap_malloc(soap, sizeof(struct tt__VideoEncoderConfiguration)) ;
-    memset(trt__GetProfilesResponse->Profiles[i].VideoEncoderConfiguration, '\0', sizeof(struct tt__VideoEncoderConfiguration));
-    trt__GetProfilesResponse->Profiles[i].VideoEncoderConfiguration->Name = (char *)soap_malloc(soap, sizeof(char)*32);
-    memset(trt__GetProfilesResponse->Profiles[i].VideoEncoderConfiguration->Name, '\0', sizeof(char)*32);
-    strcpy(trt__GetProfilesResponse->Profiles[i].VideoEncoderConfiguration->Name, "EncoderConfig_Name");
-    trt__GetProfilesResponse->Profiles[i].VideoEncoderConfiguration->token = (char *)soap_malloc(soap, sizeof(char)*32);
-    memset(trt__GetProfilesResponse->Profiles[i].VideoEncoderConfiguration->token, '\0', sizeof(char)*32);
-    strcpy(trt__GetProfilesResponse->Profiles[i].VideoEncoderConfiguration->token, "000");
-    trt__GetProfilesResponse->Profiles[i].VideoEncoderConfiguration->UseCount = 1;
-    trt__GetProfilesResponse->Profiles[i].VideoEncoderConfiguration->Encoding = tt__VideoEncoding__H264;
-    //<VideoEncoderConfiguration><Resolution>、<RateControl>
-    trt__GetProfilesResponse->Profiles[i].VideoEncoderConfiguration->Resolution = (struct tt__VideoResolution *)soap_malloc(soap, sizeof(struct tt__VideoResolution));
-    memset(trt__GetProfilesResponse->Profiles[i].VideoEncoderConfiguration->Resolution, '\0', sizeof(struct tt__VideoResolution));
-    trt__GetProfilesResponse->Profiles[i].VideoEncoderConfiguration->Resolution->Width = ONVIF_FRAME_WIDTH;
-    trt__GetProfilesResponse->Profiles[i].VideoEncoderConfiguration->Resolution->Height = ONVIF_FRAME_HEIGHT;
-    trt__GetProfilesResponse->Profiles[i].VideoEncoderConfiguration->Quality = 1;
-    //<VideoEncoderConfiguration><RateControl>
-    trt__GetProfilesResponse->Profiles[i].VideoEncoderConfiguration->RateControl = (struct tt__VideoRateControl *)soap_malloc(soap, sizeof(struct tt__VideoRateControl));
-    memset(trt__GetProfilesResponse->Profiles[i].VideoEncoderConfiguration->RateControl, '\0', sizeof(struct tt__VideoRateControl));
-    trt__GetProfilesResponse->Profiles[i].VideoEncoderConfiguration->RateControl->FrameRateLimit = 25;
-    trt__GetProfilesResponse->Profiles[i].VideoEncoderConfiguration->RateControl->EncodingInterval = 1;
-    trt__GetProfilesResponse->Profiles[i].VideoEncoderConfiguration->RateControl->BitrateLimit = 1024;
-    //<VideoEncoderConfiguration><H264>
-    trt__GetProfilesResponse->Profiles[i].VideoEncoderConfiguration->H264 = (struct tt__H264Configuration *)soap_malloc(soap, sizeof(struct tt__H264Configuration));
-    memset(trt__GetProfilesResponse->Profiles[i].VideoEncoderConfiguration->H264, '\0', sizeof(struct tt__H264Configuration));
-    trt__GetProfilesResponse->Profiles[i].VideoEncoderConfiguration->H264->GovLength = 60;
-    trt__GetProfilesResponse->Profiles[i].VideoEncoderConfiguration->H264->H264Profile = tt__H264Profile__High;
-
-    // trt__GetProfilesResponse->Profiles[i].VideoEncoderConfiguration->Multicast = (struct tt__MulticastConfiguration *)soap_malloc(soap, sizeof(struct tt__MulticastConfiguration));
-    // memset(trt__GetProfilesResponse->Profiles[i].VideoEncoderConfiguration->Multicast, '\0', sizeof(struct tt__MulticastConfiguration));
-
-    // trt__GetProfilesResponse->Profiles[i].VideoEncoderConfiguration->Multicast->Address = (struct tt__IPAddress *)soap_malloc(soap, sizeof(struct tt__IPAddress));
-    // memset(trt__GetProfilesResponse->Profiles[i].VideoEncoderConfiguration->Multicast->Address, 0, sizeof(struct tt__IPAddress));
-    // trt__GetProfilesResponse->Profiles[i].VideoEncoderConfiguration->Multicast->Address->Type = tt__IPType__IPv4;
-    // trt__GetProfilesResponse->Profiles[i].VideoEncoderConfiguration->Multicast->Address->IPv4Address = (char *)soap_malloc(soap, sizeof(char) * 32);
-    // memset(trt__GetProfilesResponse->Profiles[i].VideoEncoderConfiguration->Multicast->Address->IPv4Address, 0, sizeof(char) * 32);
-    // strcpy(trt__GetProfilesResponse->Profiles[i].VideoEncoderConfiguration->Multicast->Address->IPv4Address, "224.1.0.0");
-
-    // trt__GetProfilesResponse->Profiles[i].VideoEncoderConfiguration->Multicast->Port = 40000;
-    // trt__GetProfilesResponse->Profiles[i].VideoEncoderConfiguration->Multicast->TTL = 64;
-    // trt__GetProfilesResponse->Profiles[i].VideoEncoderConfiguration->Multicast->AutoStart = xsd__boolean__true_;
-
-    trt__GetProfilesResponse->Profiles[i].PTZConfiguration = (struct tt__PTZConfiguration *)soap_malloc(soap, sizeof(struct tt__PTZConfiguration));
-    memset(trt__GetProfilesResponse->Profiles[i].PTZConfiguration, 0, sizeof(struct tt__PTZConfiguration));
-    trt__GetProfilesResponse->Profiles[i].PTZConfiguration->Name = (char *)soap_malloc(soap, sizeof(char)*32);
-    memset(trt__GetProfilesResponse->Profiles[i].PTZConfiguration->Name, '\0', sizeof(char) * 32);
-    strcpy(trt__GetProfilesResponse->Profiles[i].PTZConfiguration->Name, "PtzConfig_Name");
-    trt__GetProfilesResponse->Profiles[i].PTZConfiguration->token = (char *)soap_malloc(soap, sizeof(char)*32);
-    memset(trt__GetProfilesResponse->Profiles[i].PTZConfiguration->token, '\0', sizeof(char) * 32);
-    strcpy(trt__GetProfilesResponse->Profiles[i].PTZConfiguration->token, "111");
-
-    //trt__GetProfilesResponse->Profiles[i].PTZConfiguration->UseCount = ;
-    trt__GetProfilesResponse->Profiles[i].PTZConfiguration->MoveRamp = (int *)soap_malloc(soap, sizeof(int));
-    memset(trt__GetProfilesResponse->Profiles[i].PTZConfiguration->MoveRamp, 0, sizeof(int));
-    trt__GetProfilesResponse->Profiles[i].PTZConfiguration->MoveRamp[0] = 1;
-    trt__GetProfilesResponse->Profiles[i].PTZConfiguration->PresetRamp = (int *)soap_malloc(soap, sizeof(int));
-    memset(trt__GetProfilesResponse->Profiles[i].PTZConfiguration->PresetRamp, 0, sizeof(int));
-    trt__GetProfilesResponse->Profiles[i].PTZConfiguration->PresetRamp[0] = 1;
-    trt__GetProfilesResponse->Profiles[i].PTZConfiguration->PresetTourRamp = (int *)soap_malloc(soap, sizeof(int));
-    memset(trt__GetProfilesResponse->Profiles[i].PTZConfiguration->PresetTourRamp, 0, sizeof(int));
-    trt__GetProfilesResponse->Profiles[i].PTZConfiguration->PresetTourRamp[0] = 1;
-    trt__GetProfilesResponse->Profiles[i].PTZConfiguration->NodeToken = (char *)soap_malloc(soap, sizeof(char)*32);
-    memset(trt__GetProfilesResponse->Profiles[i].PTZConfiguration->NodeToken, '\0', sizeof(char) * 32);
-    strcpy(trt__GetProfilesResponse->Profiles[i].PTZConfiguration->NodeToken, "111");
 
     return 0;
 }
@@ -3119,31 +2634,6 @@ SOAP_FMAC5 int SOAP_FMAC6 __trt__DeleteProfile(struct soap* soap, struct _trt__D
 /** Web service operation '__trt__GetVideoSourceConfigurations' (returns SOAP_OK or error code) */
 SOAP_FMAC5 int SOAP_FMAC6 __trt__GetVideoSourceConfigurations(struct soap* soap, struct _trt__GetVideoSourceConfigurations *trt__GetVideoSourceConfigurations, struct _trt__GetVideoSourceConfigurationsResponse *trt__GetVideoSourceConfigurationsResponse)
 {
-    printf("----------------------------__trt__GetVideoSourceConfigurations-----------------------------------\n");
-    trt__GetVideoSourceConfigurationsResponse->__sizeConfigurations = 1;
-    trt__GetVideoSourceConfigurationsResponse->Configurations =
-            (struct tt__VideoSourceConfiguration *)soap_malloc(soap, sizeof(struct tt__VideoSourceConfiguration) * trt__GetVideoSourceConfigurationsResponse->__sizeConfigurations);
-    memset(trt__GetVideoSourceConfigurationsResponse->Configurations, '\0', sizeof(struct tt__VideoSourceConfiguration) * trt__GetVideoSourceConfigurationsResponse->__sizeConfigurations);
-
-    trt__GetVideoSourceConfigurationsResponse->Configurations[0].UseCount = 1;
-    trt__GetVideoSourceConfigurationsResponse->Configurations[0].Name = (char*)soap_malloc(soap, sizeof(char) * 32);
-    memset(trt__GetVideoSourceConfigurationsResponse->Configurations[0].Name, '\0', sizeof(char) * 32);
-    strcpy(trt__GetVideoSourceConfigurationsResponse->Configurations[0].Name, "SourceConfig_Name");
-
-    trt__GetVideoSourceConfigurationsResponse->Configurations[0].token = (char*)soap_malloc(soap, sizeof(char) * 32);
-    memset(trt__GetVideoSourceConfigurationsResponse->Configurations[0].token, '\0', sizeof(char) * 32);
-    strcpy(trt__GetVideoSourceConfigurationsResponse->Configurations[0].token, "000");
-
-    trt__GetVideoSourceConfigurationsResponse->Configurations[0].SourceToken = (char*)soap_malloc(soap, sizeof(char) * 32);
-    memset(trt__GetVideoSourceConfigurationsResponse->Configurations[0].SourceToken, '\0', sizeof(char) * 32);
-    strcpy(trt__GetVideoSourceConfigurationsResponse->Configurations[0].SourceToken, "000");
-
-    trt__GetVideoSourceConfigurationsResponse->Configurations[0].Bounds = (struct tt__IntRectangle *)soap_malloc(soap, sizeof(struct tt__IntRectangle));
-    memset(trt__GetVideoSourceConfigurationsResponse->Configurations[0].Bounds, 0, sizeof(struct tt__IntRectangle));
-    trt__GetVideoSourceConfigurationsResponse->Configurations[0].Bounds->x      = 0;
-    trt__GetVideoSourceConfigurationsResponse->Configurations[0].Bounds->y      = 0;
-    trt__GetVideoSourceConfigurationsResponse->Configurations[0].Bounds->width  = ONVIF_FRAME_WIDTH;
-    trt__GetVideoSourceConfigurationsResponse->Configurations[0].Bounds->height = ONVIF_FRAME_HEIGHT;
 
     return 0;
 }
@@ -3151,55 +2641,6 @@ SOAP_FMAC5 int SOAP_FMAC6 __trt__GetVideoSourceConfigurations(struct soap* soap,
 /** Web service operation '__trt__GetVideoEncoderConfigurations' (returns SOAP_OK or error code) */
 SOAP_FMAC5 int SOAP_FMAC6 __trt__GetVideoEncoderConfigurations(struct soap* soap, struct _trt__GetVideoEncoderConfigurations *trt__GetVideoEncoderConfigurations, struct _trt__GetVideoEncoderConfigurationsResponse *trt__GetVideoEncoderConfigurationsResponse)
 {
-    printf("----------------------------__trt__GetVideoEncoderConfigurations-----------------------------------\n");
-    int size = 1;
-    trt__GetVideoEncoderConfigurationsResponse->__sizeConfigurations = size;
-    trt__GetVideoEncoderConfigurationsResponse->Configurations =
-            (struct tt__VideoEncoderConfiguration *)soap_malloc(soap, sizeof(struct tt__VideoEncoderConfiguration) * size);
-    memset(trt__GetVideoEncoderConfigurationsResponse->Configurations, '\0', sizeof(struct tt__VideoEncoderConfiguration) * size);
-
-    //<VideoEncoderConfigurations>
-    int i = 0;
-    trt__GetVideoEncoderConfigurationsResponse->Configurations[i].Name = (char *)soap_malloc(soap, sizeof(char) * 32);
-    memset(trt__GetVideoEncoderConfigurationsResponse->Configurations[i].Name, '\0', sizeof(char) * 32);
-    trt__GetVideoEncoderConfigurationsResponse->Configurations[i].token = (char *)soap_malloc(soap, sizeof(char) * 32);
-    memset(trt__GetVideoEncoderConfigurationsResponse->Configurations[i].token, '\0', sizeof(char) * 32);
-        strcpy(trt__GetVideoEncoderConfigurationsResponse->Configurations[i].Name, "EncoderConfig_Name");
-    strcpy(trt__GetVideoEncoderConfigurationsResponse->Configurations[i].token, "000");
-    trt__GetVideoEncoderConfigurationsResponse->Configurations[i].UseCount = 1;
-    trt__GetVideoEncoderConfigurationsResponse->Configurations[i].Quality = 1;
-    trt__GetVideoEncoderConfigurationsResponse->Configurations[i].Encoding = tt__VideoEncoding__H264;   // JPEG = 0 , MPEG = 1, H264 = 2;
-    //<Configurations><Resolution>
-    trt__GetVideoEncoderConfigurationsResponse->Configurations[i].Resolution = (struct tt__VideoResolution *)soap_malloc(soap,sizeof(struct tt__VideoResolution));
-    memset(trt__GetVideoEncoderConfigurationsResponse->Configurations[i].Resolution, 0 , sizeof(struct tt__VideoResolution));
-    trt__GetVideoEncoderConfigurationsResponse->Configurations[i].Resolution->Width  = ONVIF_FRAME_WIDTH;
-    trt__GetVideoEncoderConfigurationsResponse->Configurations[i].Resolution->Height = ONVIF_FRAME_HEIGHT;
-    //<Configurations><RateControl>
-    trt__GetVideoEncoderConfigurationsResponse->Configurations[i].RateControl = (struct tt__VideoRateControl *)soap_malloc(soap, sizeof(struct tt__VideoRateControl));
-    memset(trt__GetVideoEncoderConfigurationsResponse->Configurations[i].RateControl, 0, sizeof(struct tt__VideoRateControl));
-    trt__GetVideoEncoderConfigurationsResponse->Configurations[i].RateControl->FrameRateLimit   = 25;
-    trt__GetVideoEncoderConfigurationsResponse->Configurations[i].RateControl->EncodingInterval = 1;
-    trt__GetVideoEncoderConfigurationsResponse->Configurations[i].RateControl->BitrateLimit     = 1024;
-    //<Configurations><H264>
-    trt__GetVideoEncoderConfigurationsResponse->Configurations[i].H264 = (struct tt__H264Configuration *)soap_malloc(soap, sizeof(struct tt__H264Configuration));
-    memset(trt__GetVideoEncoderConfigurationsResponse->Configurations[i].H264, 0, sizeof(struct tt__H264Configuration));
-    trt__GetVideoEncoderConfigurationsResponse->Configurations[i].H264->GovLength  = 60;
-    trt__GetVideoEncoderConfigurationsResponse->Configurations[i].H264->H264Profile = tt__H264Profile__High;
-
-    //<Configuration><Multicast>
-    trt__GetVideoEncoderConfigurationsResponse->Configurations[i].Multicast = (struct tt__MulticastConfiguration *)soap_malloc(soap, sizeof(struct tt__MulticastConfiguration));
-    memset(trt__GetVideoEncoderConfigurationsResponse->Configurations[i].Multicast, 0, sizeof(struct tt__MulticastConfiguration));
-    trt__GetVideoEncoderConfigurationsResponse->Configurations[i].Multicast->Address = (struct tt__IPAddress *)soap_malloc(soap, sizeof(struct tt__IPAddress));
-    memset(trt__GetVideoEncoderConfigurationsResponse->Configurations[i].Multicast->Address, 0, sizeof(struct tt__IPAddress));
-    trt__GetVideoEncoderConfigurationsResponse->Configurations[i].Multicast->Address->Type = tt__IPType__IPv4;
-    trt__GetVideoEncoderConfigurationsResponse->Configurations[i].Multicast->Address->IPv4Address = (char *)soap_malloc(soap, sizeof(char) * 32);
-    memset(trt__GetVideoEncoderConfigurationsResponse->Configurations[i].Multicast->Address->IPv4Address, '\0', sizeof(char) * 32);
-    strcpy(trt__GetVideoEncoderConfigurationsResponse->Configurations[i].Multicast->Address->IPv4Address, "224.1.0.0");
-    trt__GetVideoEncoderConfigurationsResponse->Configurations[i].Multicast->Port = 5000;
-    trt__GetVideoEncoderConfigurationsResponse->Configurations[i].Multicast->TTL = 64;
-    trt__GetVideoEncoderConfigurationsResponse->Configurations[i].Multicast->AutoStart = xsd__boolean__true_;
-    //<Configuration><SessionTimeout>
-    trt__GetVideoEncoderConfigurationsResponse->Configurations[i].SessionTimeout = ONVIF_TIME_OUT;
 
     return 0;
 }
@@ -3243,28 +2684,6 @@ SOAP_FMAC5 int SOAP_FMAC6 __trt__GetAudioDecoderConfigurations(struct soap* soap
 /** Web service operation '__trt__GetVideoSourceConfiguration' (returns SOAP_OK or error code) */
 SOAP_FMAC5 int SOAP_FMAC6 __trt__GetVideoSourceConfiguration(struct soap* soap, struct _trt__GetVideoSourceConfiguration *trt__GetVideoSourceConfiguration, struct _trt__GetVideoSourceConfigurationResponse *trt__GetVideoSourceConfigurationResponse)
 {
-    printf("-----------------------------__trt__GetVideoSourceConfiguration-------------------------------------\n");
-    trt__GetVideoSourceConfigurationResponse->Configuration = (struct tt__VideoSourceConfiguration *)soap_malloc(soap, sizeof(struct tt__VideoSourceConfiguration));
-    memset(trt__GetVideoSourceConfigurationResponse->Configuration, '\0', sizeof(struct tt__VideoSourceConfiguration));
-
-    trt__GetVideoSourceConfigurationResponse->Configuration->UseCount = 1;
-    trt__GetVideoSourceConfigurationResponse->Configuration->Name = (char*)soap_malloc(soap, sizeof(char) * 32);
-    memset(trt__GetVideoSourceConfigurationResponse->Configuration->Name, '\0', sizeof(char) * 32);
-    trt__GetVideoSourceConfigurationResponse->Configuration->token = (char*)soap_malloc(soap, sizeof(char) * 32);
-    memset(trt__GetVideoSourceConfigurationResponse->Configuration->token, '\0', sizeof(char) * 32);
-        strcpy(trt__GetVideoSourceConfigurationResponse->Configuration->Name, "SourceConfig_Name");
-    strcpy(trt__GetVideoSourceConfigurationResponse->Configuration->token, "000");
-
-    trt__GetVideoSourceConfigurationResponse->Configuration->SourceToken = (char*)soap_malloc(soap, sizeof(char) * 32);
-    memset(trt__GetVideoSourceConfigurationResponse->Configuration->SourceToken, '\0', sizeof(char) * 32);
-    strcpy(trt__GetVideoSourceConfigurationResponse->Configuration->SourceToken, "000");
-
-    trt__GetVideoSourceConfigurationResponse->Configuration->Bounds = (struct tt__IntRectangle *)soap_malloc(soap, sizeof(struct tt__IntRectangle));
-    memset(trt__GetVideoSourceConfigurationResponse->Configuration->Bounds, 0, sizeof(struct tt__IntRectangle));
-    trt__GetVideoSourceConfigurationResponse->Configuration->Bounds->x      = 0;
-    trt__GetVideoSourceConfigurationResponse->Configuration->Bounds->y      = 0;
-    trt__GetVideoSourceConfigurationResponse->Configuration->Bounds->width  = ONVIF_FRAME_WIDTH;
-    trt__GetVideoSourceConfigurationResponse->Configuration->Bounds->height = ONVIF_FRAME_HEIGHT;
 
     return 0;
 }
@@ -3272,54 +2691,8 @@ SOAP_FMAC5 int SOAP_FMAC6 __trt__GetVideoSourceConfiguration(struct soap* soap, 
 /** Web service operation '__trt__GetVideoEncoderConfiguration' (returns SOAP_OK or error code) */
 SOAP_FMAC5 int SOAP_FMAC6 __trt__GetVideoEncoderConfiguration(struct soap* soap, struct _trt__GetVideoEncoderConfiguration *trt__GetVideoEncoderConfiguration, struct _trt__GetVideoEncoderConfigurationResponse *trt__GetVideoEncoderConfigurationResponse)
 {
-    printf("-----------------------------__trt__GetVideoEncoderConfiguration-------------------------------------\n");
-    trt__GetVideoEncoderConfigurationResponse->Configuration = (struct tt__VideoEncoderConfiguration *)soap_malloc(soap, sizeof(struct tt__VideoEncoderConfiguration));
-    memset(trt__GetVideoEncoderConfigurationResponse->Configuration, '\0', sizeof(struct tt__VideoEncoderConfiguration));
 
-    //<VideoEncoderConfiguration>
-    trt__GetVideoEncoderConfigurationResponse->Configuration->Name = (char *)soap_malloc(soap, sizeof(char) * 32);
-    memset(trt__GetVideoEncoderConfigurationResponse->Configuration->Name, '\0', sizeof(char)* 32);
-    strcpy(trt__GetVideoEncoderConfigurationResponse->Configuration->Name, "EncoderConfig_Name");
-    trt__GetVideoEncoderConfigurationResponse->Configuration->token = (char *)soap_malloc(soap, sizeof(char) * 32);
-    memset(trt__GetVideoEncoderConfigurationResponse->Configuration->token, '\0', sizeof(char) * 32);
-    strcpy(trt__GetVideoEncoderConfigurationResponse->Configuration->token, "000");
-    trt__GetVideoEncoderConfigurationResponse->Configuration->UseCount = 1;
-    trt__GetVideoEncoderConfigurationResponse->Configuration->Quality = 1;
-    //根据前端设备时间支持的编码格式选择对应的值，因为我测试的是设备只支持H264 ，所以选了2
-    trt__GetVideoEncoderConfigurationResponse->Configuration->Encoding = tt__VideoEncoding__H264;   // JPEG = 0 , MPEG = 1, H264 = 2;
-    //<Configuration><Resolution>
-    trt__GetVideoEncoderConfigurationResponse->Configuration->Resolution = (struct tt__VideoResolution *)soap_malloc(soap,sizeof(struct tt__VideoResolution));
-    memset(trt__GetVideoEncoderConfigurationResponse->Configuration->Resolution, 0 , sizeof(struct tt__VideoResolution));
-    trt__GetVideoEncoderConfigurationResponse->Configuration->Resolution->Width  = ONVIF_FRAME_WIDTH;
-    trt__GetVideoEncoderConfigurationResponse->Configuration->Resolution->Height = ONVIF_FRAME_HEIGHT;
-    //<Configuration><RateControl>
-    trt__GetVideoEncoderConfigurationResponse->Configuration->RateControl = (struct tt__VideoRateControl *)soap_malloc(soap, sizeof(struct tt__VideoRateControl));
-    memset(trt__GetVideoEncoderConfigurationResponse->Configuration->RateControl, 0, sizeof(struct tt__VideoRateControl));
-    trt__GetVideoEncoderConfigurationResponse->Configuration->RateControl->FrameRateLimit   = 25;
-    trt__GetVideoEncoderConfigurationResponse->Configuration->RateControl->EncodingInterval = 1;
-    trt__GetVideoEncoderConfigurationResponse->Configuration->RateControl->BitrateLimit     = 1024;
-    //<Configuration><H264>
-    trt__GetVideoEncoderConfigurationResponse->Configuration->H264 = (struct tt__H264Configuration *)soap_malloc(soap, sizeof(struct tt__H264Configuration));
-    memset(trt__GetVideoEncoderConfigurationResponse->Configuration->H264, 0, sizeof(struct tt__H264Configuration));
-    trt__GetVideoEncoderConfigurationResponse->Configuration->H264->GovLength  = 60;
-    trt__GetVideoEncoderConfigurationResponse->Configuration->H264->H264Profile = tt__H264Profile__High;
-
-    //<Configuration><Multicast>
-    trt__GetVideoEncoderConfigurationResponse->Configuration->Multicast = (struct tt__MulticastConfiguration *)soap_malloc(soap, sizeof(struct tt__MulticastConfiguration));
-    memset(trt__GetVideoEncoderConfigurationResponse->Configuration->Multicast, 0, sizeof(struct tt__MulticastConfiguration));
-    trt__GetVideoEncoderConfigurationResponse->Configuration->Multicast->Address = (struct tt__IPAddress *)soap_malloc(soap, sizeof(struct tt__IPAddress));
-    memset(trt__GetVideoEncoderConfigurationResponse->Configuration->Multicast->Address, 0, sizeof(struct tt__IPAddress));
-    trt__GetVideoEncoderConfigurationResponse->Configuration->Multicast->Address->Type = tt__IPType__IPv4;
-    trt__GetVideoEncoderConfigurationResponse->Configuration->Multicast->Address->IPv4Address = (char *)soap_malloc(soap, sizeof(char) * 32);
-    memset(trt__GetVideoEncoderConfigurationResponse->Configuration->Multicast->Address->IPv4Address, '\0', sizeof(char) * 32);
-    strcpy(trt__GetVideoEncoderConfigurationResponse->Configuration->Multicast->Address->IPv4Address, "224.1.0.0");
-    trt__GetVideoEncoderConfigurationResponse->Configuration->Multicast->Port = 5000;
-    trt__GetVideoEncoderConfigurationResponse->Configuration->Multicast->TTL = 64;
-    trt__GetVideoEncoderConfigurationResponse->Configuration->Multicast->AutoStart = xsd__boolean__true_;
-    //<Configuration><SessionTimeout>
-    trt__GetVideoEncoderConfigurationResponse->Configuration->SessionTimeout = ONVIF_TIME_OUT;
-
-    return SOAP_OK;
+    return 0;
 }
 
 /** Web service operation '__trt__GetAudioSourceConfiguration' (returns SOAP_OK or error code) */
@@ -3415,22 +2788,6 @@ SOAP_FMAC5 int SOAP_FMAC6 __trt__SetVideoSourceConfiguration(struct soap* soap, 
 /** Web service operation '__trt__SetVideoEncoderConfiguration' (returns SOAP_OK or error code) */
 SOAP_FMAC5 int SOAP_FMAC6 __trt__SetVideoEncoderConfiguration(struct soap* soap, struct _trt__SetVideoEncoderConfiguration *trt__SetVideoEncoderConfiguration, struct _trt__SetVideoEncoderConfigurationResponse *trt__SetVideoEncoderConfigurationResponse)
 {
-   /* if (NULL != trt__SetVideoEncoderConfiguration->Configuration &&
-        tt__VideoEncoding__H264 == trt__SetVideoEncoderConfiguration->Configuration->Encoding) {
-
-        if (NULL != trt__SetVideoEncoderConfiguration->Configuration->Resolution) {
-            if (0 == strcmp(trt__SetVideoEncoderConfiguration->Configuration->token, "000")) {
-                stVideoCfg.u32MainWidth = trt__SetVideoEncoderConfiguration->Configuration->Resolution->Width;
-                stVideoCfg.u32MainHeight = trt__SetVideoEncoderConfiguration->Configuration->Resolution->Height;
-            }
-            else {
-                stVideoCfg.u32SubWidth = trt__SetVideoEncoderConfiguration->Configuration->Resolution->Width;
-                stVideoCfg.u32SubHeight = trt__SetVideoEncoderConfiguration->Configuration->Resolution->Height;
-            }
-        }
-
-    }*/
-
     return 0;
 }
 
@@ -3521,19 +2878,6 @@ SOAP_FMAC5 int SOAP_FMAC6 __trt__GetGuaranteedNumberOfVideoEncoderInstances(stru
 /** Web service operation '__trt__GetStreamUri' (returns SOAP_OK or error code) */
 SOAP_FMAC5 int SOAP_FMAC6 __trt__GetStreamUri(struct soap* soap, struct _trt__GetStreamUri *trt__GetStreamUri, struct _trt__GetStreamUriResponse *trt__GetStreamUriResponse)
 {
-    printf("--------------------------__trt__GetStreamUri---------------------------\n");
-
-    trt__GetStreamUriResponse->MediaUri = (struct tt__MediaUri *)soap_malloc(soap, sizeof(struct tt__MediaUri));
-    memset(trt__GetStreamUriResponse->MediaUri, 0, sizeof(struct tt__MediaUri));
-
-    trt__GetStreamUriResponse->MediaUri->Uri = (char *)soap_malloc(soap, sizeof(char) * 100);
-    memset(trt__GetStreamUriResponse->MediaUri->Uri, '\0', sizeof(char) * 100);
-    sprintf(trt__GetStreamUriResponse->MediaUri->Uri, "rtsp://192.168.88.124/mainstream");
-    trt__GetStreamUriResponse->MediaUri->InvalidAfterConnect = xsd__boolean__true_;
-    trt__GetStreamUriResponse->MediaUri->InvalidAfterReboot  = xsd__boolean__true_;
-    //超时时间
-    trt__GetStreamUriResponse->MediaUri->Timeout = 0;
-
     return 0;
 }
 
@@ -3558,17 +2902,6 @@ SOAP_FMAC5 int SOAP_FMAC6 __trt__SetSynchronizationPoint(struct soap* soap, stru
 /** Web service operation '__trt__GetSnapshotUri' (returns SOAP_OK or error code) */
 SOAP_FMAC5 int SOAP_FMAC6 __trt__GetSnapshotUri(struct soap* soap, struct _trt__GetSnapshotUri *trt__GetSnapshotUri, struct _trt__GetSnapshotUriResponse *trt__GetSnapshotUriResponse)
 {
-    printf("-------------------__trt__GetSnapshotUri------------------------\n");
-
-    trt__GetSnapshotUriResponse->MediaUri = (struct tt__MediaUri *)soap_malloc(soap, sizeof(struct tt__MediaUri));
-    memset(trt__GetSnapshotUriResponse->MediaUri, 0, sizeof(struct tt__MediaUri));
-
-    trt__GetSnapshotUriResponse->MediaUri->Uri = (char *)soap_malloc(soap, sizeof(char) * 100);
-    memset(trt__GetSnapshotUriResponse->MediaUri->Uri, 0, sizeof(char) * 100);
-    sprintf(trt__GetSnapshotUriResponse->MediaUri->Uri, "http://%s:%d/snap0.jpeg", ONVIF_TCP_IP, 80);
-    trt__GetSnapshotUriResponse->MediaUri->InvalidAfterConnect = xsd__boolean__false_;
-    trt__GetSnapshotUriResponse->MediaUri->InvalidAfterReboot = xsd__boolean__false_;
-    trt__GetSnapshotUriResponse->MediaUri->Timeout = ONVIF_TIME_OUT;
 
     return 0;
 }

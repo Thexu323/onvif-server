@@ -1,10 +1,6 @@
 #include "common.h"
 #include "soapH.h"
 
-#define ONVIF_UDP_PORT 3702
-
-
-
 static SOAP_SOCKET SoapBind(struct soap *pSoap, const char *pIp, bool flag)
 {
 	SOAP_SOCKET sockFD = SOAP_INVALID_SOCKET;
@@ -36,11 +32,6 @@ static SOAP_SOCKET SoapBind(struct soap *pSoap, const char *pIp, bool flag)
 	return sockFD;
 }
 
-
-
-
-
-
 //加入设备组，设备发现
 static void *OnvifBeDiscovered(void *arg) {
 
@@ -67,7 +58,7 @@ static void *OnvifBeDiscovered(void *arg) {
     //IP_ADD_MEMBERSHIP用于加入某个多播组，之后就可以向这个多播组发送数据或者从多播组接收数据
     if(setsockopt(UDPserverSoap.master, IPPROTO_IP, IP_ADD_MEMBERSHIP, (char*)&mcast, sizeof(mcast)) < 0)
     {
-            printf("setsockopt error! error code = %d,err string = %s\n",errno,strerror(errno));
+        printf("setsockopt error! error code = %d,err string = %s\n",errno,strerror(errno));
         return 0;
     }
     
@@ -76,11 +67,11 @@ static void *OnvifBeDiscovered(void *arg) {
     {
         printf("socket connect %d\n", fd);
         fd = soap_accept(&UDPserverSoap);
-        if (!soap_valid_socket(fd)) {
+        if (!soap_valid_socket(fd)) 
+        {
 			soap_print_fault(&UDPserverSoap, stderr);
 			exit(1);
 		}
-		
 
         if( soap_serve(&UDPserverSoap) != SOAP_OK )
         {
@@ -99,32 +90,34 @@ static void *OnvifBeDiscovered(void *arg) {
 
 
 //监听soap报文
-static void *OnvifWebServices(void *arg) {
+static void *OnvifWebServices(void *arg)
+{
 
 	struct soap tcpSoap = {0};
 	soap_init(&tcpSoap);
-	tcpSoap.port = 5000;
+	tcpSoap.port = ONVIF_TCP_PORT;
 	tcpSoap.bind_flags = SO_REUSEADDR;  
 	//tcpSoap.accept_timeout = tcpSoap.recv_timeout = tcpSoap.send_timeout = 5;
 	soap_set_namespaces(&tcpSoap, namespaces);
 
     int tcpsocket = SoapBind(&tcpSoap, ONVIF_TCP_IP, false);
-    if (!soap_valid_socket(tcpsocket)) {
+    if (!soap_valid_socket(tcpsocket)) 
+    {
         printf("tcpsocket SoapBind failed!\n");
         soap_print_fault(&tcpSoap, stderr);
         exit(1);
     }
     
     int tcp_fd = -1;
-    while(1) {
-    
+    while(1) 
+    {
         printf("socket connect %d\n", tcp_fd);
         tcp_fd = soap_accept(&tcpSoap);
-        if (!soap_valid_socket(tcp_fd)) {
+        if (!soap_valid_socket(tcp_fd))
+        {
 			soap_print_fault(&tcpSoap, stderr);
 			exit(1);
 		}
-		
 
         if( soap_serve(&tcpSoap) != SOAP_OK )
         {
