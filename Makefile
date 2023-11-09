@@ -14,7 +14,7 @@ all: $(OBJ)
 	$(COMPILE) $(INC) -c $< -o $@
 
 clean:
-	rm -f $(OBJ) onvifserver RECV.log  SENT.log TEST.log
+	rm -f $(OBJ) onvif-server RECV.log  SENT.log TEST.log
 
 debug:
 	echo $(OBJDIR)
