@@ -8,7 +8,7 @@ INC = -I./soap
 INC += -I./src
 
 all: $(OBJ)
-	$(COMPILE) -o onvifserver $(OBJ) -lpthread
+	$(COMPILE) -o onvif-server $(OBJ) -lpthread
 
 %.o: %.c
 	$(COMPILE) $(INC) -c $< -o $@
