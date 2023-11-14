@@ -62,23 +62,7 @@ SOAP_FMAC5 int SOAP_FMAC6  __wsdd__Probe(struct soap* soap, struct wsdd__ProbeTy
         "onvif://www.onvif.org/location/city/GuangZhou\r\n"
         "onvif://www.onvif.org/location/country/China\r\n";
 
-        sprintf(ip_addr, "%u.%u.%u.%u", ((soap->ip)>>24)&0xFF, ((soap->ip)>>16)&0xFF, ((soap->ip)>>8)&0xFF,(soap->ip)&0xFF);
-    //   printf(ip_addr, "%u.%u.%u.%u", ((soap->ip)>>24)&0xFF, ((soap->ip)>>16)&0xFF, ((soap->ip)>>8)&0xFF,(soap->ip)&0xFF);
-        sprintf(mac_addr, "000c29c9338f");
-    
-    //printf("========================+++++========");
-    //printf("%s\r\n", ip_addr);
-
-    // verify scropes
-    if( wsdd__Probe->Scopes && wsdd__Probe->Scopes->__item )
-    {
-        if( wsdd__Probe->Scopes->MatchBy )
-        {
-        }
-        else
-        {
-        }
-    }
+    sprintf(ip_addr, "%u.%u.%u.%u", ((soap->ip) >> 24) & 0xFF, ((soap->ip) >> 16) & 0xFF, ((soap->ip) >> 8) & 0xFF, (soap->ip) & 0xFF);
 
     // response ProbeMatches
     struct wsdd__ProbeMatchesType   wsdd__ProbeMatches = {0};
@@ -92,7 +76,7 @@ SOAP_FMAC5 int SOAP_FMAC6  __wsdd__Probe(struct soap* soap, struct wsdd__ProbeTy
     //sprintf(str_tmp, "http://%s/onvif/device_service", ip_addr);
     sprintf(str_tmp, "http://%s:%d/onvif/device_service", ONVIF_TCP_IP, ONVIF_TCP_PORT);
     pProbeMatchType->XAddrs = soap_strdup(soap, str_tmp);
-    if( wsdd__Probe->Types && strlen(wsdd__Probe->Types) )
+    if ( wsdd__Probe->Types && strlen(wsdd__Probe->Types) )
         pProbeMatchType->Types  = soap_strdup(soap, wsdd__Probe->Types);
     else
         pProbeMatchType->Types  = soap_strdup(soap, "dn:NetworkVideoTransmitter tds:Device");
@@ -107,7 +91,7 @@ SOAP_FMAC5 int SOAP_FMAC6  __wsdd__Probe(struct soap* soap, struct wsdd__ProbeTy
     pScopes->__item  = soap_strdup(soap, scopes_message);
     pProbeMatchType->Scopes = pScopes;
 
-    if( !strlen(g_uuid) )
+    if ( !strlen(g_uuid) )
         snprintf(g_uuid, 64, "%s", soap_wsa_rand_uuid(soap));
     pMessageID = g_uuid;
     // snprintf(str_tmp, 256, "%s-%s", pMessageID, mac_addr);
@@ -122,13 +106,13 @@ SOAP_FMAC5 int SOAP_FMAC6  __wsdd__Probe(struct soap* soap, struct wsdd__ProbeTy
     // Build SOAP Header
     pWsa__RelatesTo = (struct wsa__Relationship*)soap_malloc(soap, sizeof(struct wsa__Relationship));
     soap_default__wsa__RelatesTo(soap, pWsa__RelatesTo);
-    pWsa__RelatesTo->__item = soap->header->wsa__MessageID;
+    pWsa__RelatesTo->__item      = soap->header->wsa__MessageID;
     soap->header->wsa__RelatesTo = pWsa__RelatesTo;
-    soap->header->wsa__Action      = soap_strdup(soap, "http://schemas.xmlsoap.org/ws/2005/04/discovery/ProbeMatches");
-    soap->header->wsa__To          = soap_strdup(soap, "http://schemas.xmlsoap.org/ws/2004/08/addressing/role/anonymous");
+    soap->header->wsa__Action    = soap_strdup(soap, "http://schemas.xmlsoap.org/ws/2005/04/discovery/ProbeMatches");
+    soap->header->wsa__To        = soap_strdup(soap, "http://schemas.xmlsoap.org/ws/2004/08/addressing/role/anonymous");
 
     soap_send___wsdd__ProbeMatches(soap, "http://", NULL, &wsdd__ProbeMatches);
-	return 0;
+    return 0;
 }
 
 
