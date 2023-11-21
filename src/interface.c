@@ -2342,11 +2342,23 @@ SOAP_FMAC5 int SOAP_FMAC6 __tptz__GetNode(struct soap* soap, struct _tptz__GetNo
     tptz__GetNodeResponse->PTZNode->SupportedPTZSpaces = (struct tt__PTZSpaces *)soap_malloc(soap, sizeof(struct tt__PTZSpaces));
     memset(tptz__GetNodeResponse->PTZNode->SupportedPTZSpaces, 0, sizeof(struct tt__PTZSpaces));
 
-    tptz__GetNodeResponse->PTZNode->SupportedPTZSpaces->ContinuousPanTiltVelocitySpace = (struct tt__Space2DDescription *)soap_malloc(soap, sizeof(struct tt__Space2DDescription));
+
+    tptz__GetNodeResponse->PTZNode->SupportedPTZSpaces->ContinuousPanTiltVelocitySpace = (struct tt__Space2DDescription *) soap_malloc(soap, sizeof(struct tt__Space2DDescription));
     memset(tptz__GetNodeResponse->PTZNode->SupportedPTZSpaces->ContinuousPanTiltVelocitySpace, 0, sizeof(struct tt__Space2DDescription));
-    tptz__GetNodeResponse->PTZNode->SupportedPTZSpaces->ContinuousPanTiltVelocitySpace->URI = (char *)soap_malloc(soap, sizeof(char) * 128);
-    memset(tptz__GetNodeResponse->PTZNode->SupportedPTZSpaces->ContinuousPanTiltVelocitySpace->URI, '\0', sizeof(char) * 128);
-    sprintf(tptz__GetNodeResponse->PTZNode->SupportedPTZSpaces->ContinuousPanTiltVelocitySpace->URI, "http://www.onvif.org/ver10/tptz/PanTiltSpaces/VelocityGenericSpace");
+
+
+    //tptz__GetNodeResponse->PTZNode->SupportedPTZSpaces->Extension = (struct tt__PTZSpacesExtension *) soap_malloc(soap, sizeof (struct tt__PTZSpacesExtension));
+    //tptz__GetNodeResponse->PTZNode->SupportedPTZSpaces->ContinuousPanTiltVelocitySpace = 
+    //tptz__GetNodeResponse->PTZNode->SupportedPTZSpaces->ContinuousPanTiltVelocitySpace = (struct tt__Space2DDescription *) soap_malloc(soap, sizeof(struct tt__Space2DDescription));
+
+
+
+   // memset(tptz__GetNodeResponse->PTZNode->SupportedPTZSpaces->ContinuousPanTiltVelocitySpace, 0, sizeof(struct tt__Space2DDescription));
+    // tptz__GetNodeResponse->PTZNode->SupportedPTZSpaces->ContinuousPanTiltVelocitySpace->URI = (char *)soap_malloc(soap, sizeof(char) * 128);
+    // memset(tptz__GetNodeResponse->PTZNode->SupportedPTZSpaces->ContinuousPanTiltVelocitySpace->URI, '\0', sizeof(char) * 128);
+    // sprintf(tptz__GetNodeResponse->PTZNode->SupportedPTZSpaces->ContinuousPanTiltVelocitySpace->URI, "http://www.onvif.org/ver10/tptz/PanTiltSpaces/VelocityGenericSpace");
+
+    // printf("%s\n", tptz__GetNodeResponse->PTZNode->SupportedPTZSpaces->ContinuousPanTiltVelocitySpace->URI);
 
     // tptz__GetNodeResponse->PTZNode->SupportedPTZSpaces->ContinuousPanTiltVelocitySpace[0].URI = (char *)soap_malloc(soap, sizeof(char) * 128);
     // memset(tptz__GetNodeResponse->PTZNode->SupportedPTZSpaces->ContinuousPanTiltVelocitySpace[0].URI, '\0', sizeof(char) * 128);
@@ -2388,15 +2400,15 @@ SOAP_FMAC5 int SOAP_FMAC6 __tptz__GetNode(struct soap* soap, struct _tptz__GetNo
     // tptz__GetNodeResponse->PTZNode->SupportedPTZSpaces->ContinuousZoomVelocitySpace[1].XRange->Min = -7.000000;
     // tptz__GetNodeResponse->PTZNode->SupportedPTZSpaces->ContinuousZoomVelocitySpace[1].XRange->Max = 7.000000;
     
-    //  tptz__GetNodeResponse->PTZNode->MaximumNumberOfPresets = 300;
-    //  tptz__GetNodeResponse->PTZNode->HomeSupported = xsd__boolean__false_;
+    // tptz__GetNodeResponse->PTZNode->MaximumNumberOfPresets = 300;
+    // tptz__GetNodeResponse->PTZNode->HomeSupported = xsd__boolean__false_;
 
     // tptz__GetNodeResponse->PTZNode->Extension = (struct tt__PTZNodeExtension *)soap_malloc(soap, sizeof(struct tt__PTZNodeExtension));
     // memset(tptz__GetNodeResponse->PTZNode->Extension, 0, sizeof(struct tt__PTZNodeExtension));
     // tptz__GetNodeResponse->PTZNode->Extension->SupportedPresetTour = (struct tt__PTZPresetTourSupported *)soap_malloc(soap, sizeof(struct tt__PTZPresetTourSupported));
     // memset(tptz__GetNodeResponse->PTZNode->Extension->SupportedPresetTour, 0, sizeof(struct tt__PTZPresetTourSupported));
     // tptz__GetNodeResponse->PTZNode->Extension->SupportedPresetTour->MaximumNumberOfPresetTours = 8;
-    // tptz__GetNodeResponse->PTZNode->Extension->SupportedPresetTour->PTZPresetTourOperation = (enum tt__PTZPresetTourOperation *)soap_malloc(soap, sizeof(enum tt__PTZPresetTourOperation) * 2);
+    // tptz__GetNodeResponse->PTZNode->Extension->SupportedPresetTour->PTZPresetTourOperation = (enum tt__PTZPresetTourOperation *)soap_malloc(soap, sizeof(enum tt__PTZPresetTourOperation));
     // memset(tptz__GetNodeResponse->PTZNode->Extension->SupportedPresetTour->PTZPresetTourOperation, 0, sizeof(enum tt__PTZPresetTourOperation) * 2);
     // tptz__GetNodeResponse->PTZNode->Extension->SupportedPresetTour->PTZPresetTourOperation[0] = tt__PTZPresetTourOperation__Start;
     // tptz__GetNodeResponse->PTZNode->Extension->SupportedPresetTour->PTZPresetTourOperation[1] = tt__PTZPresetTourOperation__Stop;
@@ -2432,6 +2444,13 @@ SOAP_FMAC5 int SOAP_FMAC6 __tptz__SetHomePosition(struct soap* soap, struct _tpt
 /** Web service operation '__tptz__ContinuousMove' (returns SOAP_OK or error code) */
 SOAP_FMAC5 int SOAP_FMAC6 __tptz__ContinuousMove(struct soap* soap, struct _tptz__ContinuousMove *tptz__ContinuousMove, struct _tptz__ContinuousMoveResponse *tptz__ContinuousMoveResponse)
 {
+    printf("%s\n", tptz__ContinuousMove->ProfileToken);
+    //printf("%s\n", tptz__ContinuousMove->Velocity->PanTilt->space);
+    printf("%f\n", tptz__ContinuousMove->Velocity->PanTilt->x);
+    printf("%f\n", tptz__ContinuousMove->Velocity->PanTilt->y);
+
+
+
     return 0;
 }
 
