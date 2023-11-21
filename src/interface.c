@@ -2345,7 +2345,7 @@ SOAP_FMAC5 int SOAP_FMAC6 __tptz__GetNode(struct soap* soap, struct _tptz__GetNo
 
     tptz__GetNodeResponse->PTZNode->SupportedPTZSpaces->ContinuousPanTiltVelocitySpace = (struct tt__Space2DDescription *) soap_malloc(soap, sizeof(struct tt__Space2DDescription));
     memset(tptz__GetNodeResponse->PTZNode->SupportedPTZSpaces->ContinuousPanTiltVelocitySpace, 0, sizeof(struct tt__Space2DDescription));
-
+    printf("%p\n", tptz__GetNodeResponse->PTZNode->SupportedPTZSpaces->ContinuousPanTiltVelocitySpace);
 
     //tptz__GetNodeResponse->PTZNode->SupportedPTZSpaces->Extension = (struct tt__PTZSpacesExtension *) soap_malloc(soap, sizeof (struct tt__PTZSpacesExtension));
     //tptz__GetNodeResponse->PTZNode->SupportedPTZSpaces->ContinuousPanTiltVelocitySpace = 
@@ -2698,7 +2698,7 @@ SOAP_FMAC5 int SOAP_FMAC6 __trt__GetVideoSources(struct soap* soap, struct _trt_
 
     trt__GetVideoSourcesResponse->VideoSources->token = (char *)soap_malloc(soap, sizeof(char) * 32);
     memset(trt__GetVideoSourcesResponse->VideoSources->token, '\0', sizeof(char) * 32);
-    strcpy(trt__GetVideoSourcesResponse->VideoSources->token, "000");
+    strcpy(trt__GetVideoSourcesResponse->VideoSources->token, "VideoSource_1");
 
     trt__GetVideoSourcesResponse->VideoSources->Resolution = (struct tt__VideoResolution *)soap_malloc(soap, sizeof(struct tt__VideoResolution));
     memset(trt__GetVideoSourcesResponse->VideoSources->Resolution, '\0', sizeof(struct tt__VideoResolution));
@@ -2731,16 +2731,17 @@ SOAP_FMAC5 int SOAP_FMAC6 __trt__CreateProfile(struct soap* soap, struct _trt__C
 SOAP_FMAC5 int SOAP_FMAC6 __trt__GetProfile(struct soap* soap, struct _trt__GetProfile *trt__GetProfile, struct _trt__GetProfileResponse *trt__GetProfileResponse)
 {
     trt__GetProfileResponse->Profile = (struct tt__Profile *)soap_malloc(soap, sizeof(struct tt__Profile));
-    memset(trt__GetProfileResponse->Profile, '\0', sizeof(struct tt__Profile));
+    memset(trt__GetProfileResponse->Profile, 0, sizeof(struct tt__Profile));
 
     //<profiles><name>和<profiles><token>
     trt__GetProfileResponse->Profile->Name = (char *)soap_malloc(soap, sizeof(char) * 32);
     memset(trt__GetProfileResponse->Profile->Name, '\0', sizeof(char) * 32);
-    strcpy(trt__GetProfileResponse->Profile->Name, "MediaProfile_Name");
+    strcpy(trt__GetProfileResponse->Profile->Name, "mainStream");
     trt__GetProfileResponse->Profile->token = (char *)soap_malloc(soap, sizeof(char) * 32);
     memset(trt__GetProfileResponse->Profile->token, '\0', sizeof(char) * 32);
-    strcpy(trt__GetProfileResponse->Profile->token, "MediaProfile000");
+    strcpy(trt__GetProfileResponse->Profile->token, "Profile_1");
     trt__GetProfileResponse->Profile->fixed = (enum xsd__boolean *)soap_malloc(soap, sizeof(enum xsd__boolean));
+    memset(trt__GetProfileResponse->Profile->fixed, 0, sizeof(enum xsd__boolean));
     *(trt__GetProfileResponse->Profile->fixed) = xsd__boolean__true_;
 
     //<VideoSourceConfiguration><name>和<VideoSourceConfiguration><token>
@@ -2748,13 +2749,13 @@ SOAP_FMAC5 int SOAP_FMAC6 __trt__GetProfile(struct soap* soap, struct _trt__GetP
     memset(trt__GetProfileResponse->Profile->VideoSourceConfiguration, 0, sizeof(struct tt__VideoSourceConfiguration));
     trt__GetProfileResponse->Profile->VideoSourceConfiguration->Name = (char *)soap_malloc(soap,sizeof(char) * 32);
     memset(trt__GetProfileResponse->Profile->VideoSourceConfiguration->Name, '\0', sizeof(char) * 32);
-    strcpy(trt__GetProfileResponse->Profile->VideoSourceConfiguration->Name, "SourceConfig_Name");
+    strcpy(trt__GetProfileResponse->Profile->VideoSourceConfiguration->Name, "VideoSourceConfig");
     trt__GetProfileResponse->Profile->VideoSourceConfiguration->token = (char *)soap_malloc(soap,sizeof(char) * 32);
     memset(trt__GetProfileResponse->Profile->VideoSourceConfiguration->token, '\0', sizeof(char) * 32);
-    strcpy(trt__GetProfileResponse->Profile->VideoSourceConfiguration->token, "000");
+    strcpy(trt__GetProfileResponse->Profile->VideoSourceConfiguration->token, "VideoSourceToken");
     trt__GetProfileResponse->Profile->VideoSourceConfiguration->SourceToken = (char *)soap_malloc(soap,sizeof(char) * 32);
     memset(trt__GetProfileResponse->Profile->VideoSourceConfiguration->SourceToken, '\0', sizeof(char) * 32);
-    strcpy(trt__GetProfileResponse->Profile->VideoSourceConfiguration->SourceToken, "000");
+    strcpy(trt__GetProfileResponse->Profile->VideoSourceConfiguration->SourceToken, "VideoSource_1");
     trt__GetProfileResponse->Profile->VideoSourceConfiguration->UseCount = 1;
     //<VideoSourceConfiguration><Bounds>
     trt__GetProfileResponse->Profile->VideoSourceConfiguration->Bounds = (struct tt__IntRectangle *)soap_malloc(soap, sizeof(struct tt__IntRectangle));
@@ -2769,10 +2770,10 @@ SOAP_FMAC5 int SOAP_FMAC6 __trt__GetProfile(struct soap* soap, struct _trt__GetP
     memset(trt__GetProfileResponse->Profile->VideoEncoderConfiguration, '\0', sizeof(struct tt__VideoEncoderConfiguration));
     trt__GetProfileResponse->Profile->VideoEncoderConfiguration->Name = (char *)soap_malloc(soap, sizeof(char)*32);
     memset(trt__GetProfileResponse->Profile->VideoEncoderConfiguration->Name, '\0', sizeof(char)*32);
-    strcpy(trt__GetProfileResponse->Profile->VideoEncoderConfiguration->Name, "EncoderConfig_Name");
+    strcpy(trt__GetProfileResponse->Profile->VideoEncoderConfiguration->Name, "VideoEncoder_1");
     trt__GetProfileResponse->Profile->VideoEncoderConfiguration->token = (char *)soap_malloc(soap, sizeof(char)*32);
     memset(trt__GetProfileResponse->Profile->VideoEncoderConfiguration->token, '\0', sizeof(char)*32);
-    strcpy(trt__GetProfileResponse->Profile->VideoEncoderConfiguration->token, "000");
+    strcpy(trt__GetProfileResponse->Profile->VideoEncoderConfiguration->token, "VideoEncoderToken_1");
     trt__GetProfileResponse->Profile->VideoEncoderConfiguration->UseCount = 1;
     trt__GetProfileResponse->Profile->VideoEncoderConfiguration->Encoding = tt__VideoEncoding__H264;
     //<VideoEncoderConfiguration><Resolution>、<RateControl>
@@ -2780,18 +2781,30 @@ SOAP_FMAC5 int SOAP_FMAC6 __trt__GetProfile(struct soap* soap, struct _trt__GetP
     memset(trt__GetProfileResponse->Profile->VideoEncoderConfiguration->Resolution, '\0', sizeof(struct tt__VideoResolution));
     trt__GetProfileResponse->Profile->VideoEncoderConfiguration->Resolution->Width = ONVIF_FRAME_WIDTH;
     trt__GetProfileResponse->Profile->VideoEncoderConfiguration->Resolution->Height = ONVIF_FRAME_HEIGHT;
-    trt__GetProfileResponse->Profile->VideoEncoderConfiguration->Quality = 6;
+    trt__GetProfileResponse->Profile->VideoEncoderConfiguration->Quality = 3.000000;
     //<VideoEncoderConfiguration><RateControl>
     trt__GetProfileResponse->Profile->VideoEncoderConfiguration->RateControl = (struct tt__VideoRateControl *)soap_malloc(soap, sizeof(struct tt__VideoRateControl));
     memset(trt__GetProfileResponse->Profile->VideoEncoderConfiguration->RateControl, '\0', sizeof(struct tt__VideoRateControl));
     trt__GetProfileResponse->Profile->VideoEncoderConfiguration->RateControl->FrameRateLimit = 25;
     trt__GetProfileResponse->Profile->VideoEncoderConfiguration->RateControl->EncodingInterval = 1;
-    trt__GetProfileResponse->Profile->VideoEncoderConfiguration->RateControl->BitrateLimit = 4096;
+    trt__GetProfileResponse->Profile->VideoEncoderConfiguration->RateControl->BitrateLimit = 1024;
     //<VideoEncoderConfiguration><H264>
     trt__GetProfileResponse->Profile->VideoEncoderConfiguration->H264 = (struct tt__H264Configuration *)soap_malloc(soap, sizeof(struct tt__H264Configuration));
     memset(trt__GetProfileResponse->Profile->VideoEncoderConfiguration->H264, '\0', sizeof(struct tt__H264Configuration));
     trt__GetProfileResponse->Profile->VideoEncoderConfiguration->H264->GovLength = 60;
     trt__GetProfileResponse->Profile->VideoEncoderConfiguration->H264->H264Profile = tt__H264Profile__High;
+
+    trt__GetProfileResponse->Profile->VideoEncoderConfiguration->Multicast = (struct tt__MulticastConfiguration *)soap_malloc(soap, sizeof(struct tt__MulticastConfiguration));
+    memset(trt__GetProfileResponse->Profile->VideoEncoderConfiguration->Multicast, '\0', sizeof(struct tt__MulticastConfiguration));
+    trt__GetProfileResponse->Profile->VideoEncoderConfiguration->Multicast->Address = (struct tt__IPAddress *)soap_malloc(soap, sizeof(struct tt__IPAddress));
+    memset(trt__GetProfileResponse->Profile->VideoEncoderConfiguration->Multicast->Address, 0, sizeof(struct tt__IPAddress));
+    trt__GetProfileResponse->Profile->VideoEncoderConfiguration->Multicast->Address->Type = tt__IPType__IPv4;
+    trt__GetProfileResponse->Profile->VideoEncoderConfiguration->Multicast->Address->IPv4Address = (char *)soap_malloc(soap, sizeof(char) * 32);
+    memset(trt__GetProfileResponse->Profile->VideoEncoderConfiguration->Multicast->Address->IPv4Address, 0, sizeof(char) * 32);
+    strcpy(trt__GetProfileResponse->Profile->VideoEncoderConfiguration->Multicast->Address->IPv4Address, "0.0.0.0");
+    trt__GetProfileResponse->Profile->VideoEncoderConfiguration->Multicast->Port = 8860;
+    trt__GetProfileResponse->Profile->VideoEncoderConfiguration->Multicast->TTL = 128;
+    trt__GetProfileResponse->Profile->VideoEncoderConfiguration->Multicast->AutoStart = xsd__boolean__false_;
 
     trt__GetProfileResponse->Profile->PTZConfiguration = (struct tt__PTZConfiguration *)soap_malloc(soap, sizeof(struct tt__PTZConfiguration));
     memset(trt__GetProfileResponse->Profile->PTZConfiguration, 0, sizeof(struct tt__PTZConfiguration));
@@ -2811,8 +2824,9 @@ SOAP_FMAC5 int SOAP_FMAC6 __trt__GetProfile(struct soap* soap, struct _trt__GetP
     trt__GetProfileResponse->Profile->PTZConfiguration->DefaultContinuousZoomVelocitySpace = (char *)soap_malloc(soap, sizeof(char) * 128);
     memset(trt__GetProfileResponse->Profile->PTZConfiguration->DefaultContinuousZoomVelocitySpace, '\0', sizeof(char) * 128);
     sprintf(trt__GetProfileResponse->Profile->PTZConfiguration->DefaultContinuousZoomVelocitySpace, "http://www.onvif.org/ver10/tptz/ZoomSpaces/VelocityGenericSpace");
-
-
+    // trt__GetProfilesResponse->Profiles[i].PTZConfiguration->DefaultPTZTimeout = (int64_t *)soap_malloc(soap, sizeof(int64_t));
+    // memset(rt__GetProfilesResponse->Profiles[i].PTZConfiguration->DefaultPTZTimeout, 0, sizeof(int64_t));
+    // trt__GetProfilesResponse->Profiles[i].PTZConfiguration->DefaultPTZTimeout = 300;
     return 0;
 }
 
@@ -2821,34 +2835,32 @@ SOAP_FMAC5 int SOAP_FMAC6 __trt__GetProfiles(struct soap* soap, struct _trt__Get
 {
     trt__GetProfilesResponse->__sizeProfiles = 1;
     trt__GetProfilesResponse->Profiles = (struct tt__Profile *)soap_malloc(soap, sizeof(struct tt__Profile) * trt__GetProfilesResponse->__sizeProfiles);
-    memset(trt__GetProfilesResponse->Profiles, '\0', sizeof(struct tt__Profile) * trt__GetProfilesResponse->__sizeProfiles);
+    memset(trt__GetProfilesResponse->Profiles, 0, sizeof(struct tt__Profile) * trt__GetProfilesResponse->__sizeProfiles);
 
     //<profiles><name>和<profiles><token>
     int i = 0;
     trt__GetProfilesResponse->Profiles[i].Name = (char *)soap_malloc(soap, sizeof(char) * 32);
     memset(trt__GetProfilesResponse->Profiles[i].Name, '\0', sizeof(char) * 32);
-    strcpy(trt__GetProfilesResponse->Profiles[i].Name, "MediaProfile_Name");
+    strcpy(trt__GetProfilesResponse->Profiles[i].Name, "mainStream");
     trt__GetProfilesResponse->Profiles[i].token = (char *)soap_malloc(soap, sizeof(char) * 32);
     memset(trt__GetProfilesResponse->Profiles[i].token, '\0', sizeof(char) * 32);
-    strcpy(trt__GetProfilesResponse->Profiles[i].token, "MediaProfile000");
-
-    /*trt__GetProfilesResponse->Profiles[i].fixed = (enum xsd__boolean *)soap_malloc(soap, sizeof(int));
-    memset(trt__GetProfilesResponse->Profiles[i].fixed, 0, sizeof(int));
-    *(trt__GetProfilesResponse->Profiles[i].fixed) = xsd__boolean__false_;
-    trt__GetProfilesResponse->Profiles[i].__anyAttribute = NULL;*/
+    strcpy(trt__GetProfilesResponse->Profiles[i].token, "Profile_1");
+    trt__GetProfilesResponse->Profiles[i].fixed = (enum xsd__boolean *)soap_malloc(soap, sizeof(enum xsd__boolean));
+    memset(trt__GetProfilesResponse->Profiles[i].fixed, 0, sizeof(enum xsd__boolean));
+    *(trt__GetProfilesResponse->Profiles[i].fixed) = xsd__boolean__true_;
 
     //<VideoSourceConfiguration><name>和<VideoSourceConfiguration><token>
     trt__GetProfilesResponse->Profiles[i].VideoSourceConfiguration = (struct tt__VideoSourceConfiguration *)soap_malloc(soap,sizeof(struct tt__VideoSourceConfiguration));
     memset(trt__GetProfilesResponse->Profiles[i].VideoSourceConfiguration, 0, sizeof(struct tt__VideoSourceConfiguration));
     trt__GetProfilesResponse->Profiles[i].VideoSourceConfiguration->Name = (char *)soap_malloc(soap,sizeof(char) * 32);
     memset(trt__GetProfilesResponse->Profiles[i].VideoSourceConfiguration->Name, '\0', sizeof(char) * 32);
-    strcpy(trt__GetProfilesResponse->Profiles[i].VideoSourceConfiguration->Name, "SourceConfig_Name");
+    strcpy(trt__GetProfilesResponse->Profiles[i].VideoSourceConfiguration->Name, "VideoSourceConfig");
     trt__GetProfilesResponse->Profiles[i].VideoSourceConfiguration->token = (char *)soap_malloc(soap,sizeof(char) * 32);
     memset(trt__GetProfilesResponse->Profiles[i].VideoSourceConfiguration->token, '\0', sizeof(char) * 32);
-    strcpy(trt__GetProfilesResponse->Profiles[i].VideoSourceConfiguration->token, "000");
+    strcpy(trt__GetProfilesResponse->Profiles[i].VideoSourceConfiguration->token, "VideoSourceToken");
     trt__GetProfilesResponse->Profiles[i].VideoSourceConfiguration->SourceToken = (char *)soap_malloc(soap,sizeof(char) * 32);
     memset(trt__GetProfilesResponse->Profiles[i].VideoSourceConfiguration->SourceToken, '\0', sizeof(char) * 32);
-    strcpy(trt__GetProfilesResponse->Profiles[i].VideoSourceConfiguration->SourceToken, "000");
+    strcpy(trt__GetProfilesResponse->Profiles[i].VideoSourceConfiguration->SourceToken, "VideoSource_1");
     trt__GetProfilesResponse->Profiles[i].VideoSourceConfiguration->UseCount = 1;
     //<VideoSourceConfiguration><Bounds>
     trt__GetProfilesResponse->Profiles[i].VideoSourceConfiguration->Bounds = (struct tt__IntRectangle *)soap_malloc(soap, sizeof(struct tt__IntRectangle));
@@ -2863,10 +2875,10 @@ SOAP_FMAC5 int SOAP_FMAC6 __trt__GetProfiles(struct soap* soap, struct _trt__Get
     memset(trt__GetProfilesResponse->Profiles[i].VideoEncoderConfiguration, '\0', sizeof(struct tt__VideoEncoderConfiguration));
     trt__GetProfilesResponse->Profiles[i].VideoEncoderConfiguration->Name = (char *)soap_malloc(soap, sizeof(char)*32);
     memset(trt__GetProfilesResponse->Profiles[i].VideoEncoderConfiguration->Name, '\0', sizeof(char)*32);
-    strcpy(trt__GetProfilesResponse->Profiles[i].VideoEncoderConfiguration->Name, "EncoderConfig_Name");
+    strcpy(trt__GetProfilesResponse->Profiles[i].VideoEncoderConfiguration->Name, "VideoEncoder_1");
     trt__GetProfilesResponse->Profiles[i].VideoEncoderConfiguration->token = (char *)soap_malloc(soap, sizeof(char)*32);
     memset(trt__GetProfilesResponse->Profiles[i].VideoEncoderConfiguration->token, '\0', sizeof(char)*32);
-    strcpy(trt__GetProfilesResponse->Profiles[i].VideoEncoderConfiguration->token, "000");
+    strcpy(trt__GetProfilesResponse->Profiles[i].VideoEncoderConfiguration->token, "VideoEncoderToken_1");
     trt__GetProfilesResponse->Profiles[i].VideoEncoderConfiguration->UseCount = 1;
     trt__GetProfilesResponse->Profiles[i].VideoEncoderConfiguration->Encoding = tt__VideoEncoding__H264;
     //<VideoEncoderConfiguration><Resolution>、<RateControl>
@@ -2874,7 +2886,7 @@ SOAP_FMAC5 int SOAP_FMAC6 __trt__GetProfiles(struct soap* soap, struct _trt__Get
     memset(trt__GetProfilesResponse->Profiles[i].VideoEncoderConfiguration->Resolution, '\0', sizeof(struct tt__VideoResolution));
     trt__GetProfilesResponse->Profiles[i].VideoEncoderConfiguration->Resolution->Width = ONVIF_FRAME_WIDTH;
     trt__GetProfilesResponse->Profiles[i].VideoEncoderConfiguration->Resolution->Height = ONVIF_FRAME_HEIGHT;
-    trt__GetProfilesResponse->Profiles[i].VideoEncoderConfiguration->Quality = 1;
+    trt__GetProfilesResponse->Profiles[i].VideoEncoderConfiguration->Quality = 3.000000;
     //<VideoEncoderConfiguration><RateControl>
     trt__GetProfilesResponse->Profiles[i].VideoEncoderConfiguration->RateControl = (struct tt__VideoRateControl *)soap_malloc(soap, sizeof(struct tt__VideoRateControl));
     memset(trt__GetProfilesResponse->Profiles[i].VideoEncoderConfiguration->RateControl, '\0', sizeof(struct tt__VideoRateControl));
@@ -2887,19 +2899,17 @@ SOAP_FMAC5 int SOAP_FMAC6 __trt__GetProfiles(struct soap* soap, struct _trt__Get
     trt__GetProfilesResponse->Profiles[i].VideoEncoderConfiguration->H264->GovLength = 60;
     trt__GetProfilesResponse->Profiles[i].VideoEncoderConfiguration->H264->H264Profile = tt__H264Profile__High;
 
-    // trt__GetProfilesResponse->Profiles[i].VideoEncoderConfiguration->Multicast = (struct tt__MulticastConfiguration *)soap_malloc(soap, sizeof(struct tt__MulticastConfiguration));
-    // memset(trt__GetProfilesResponse->Profiles[i].VideoEncoderConfiguration->Multicast, '\0', sizeof(struct tt__MulticastConfiguration));
-
-    // trt__GetProfilesResponse->Profiles[i].VideoEncoderConfiguration->Multicast->Address = (struct tt__IPAddress *)soap_malloc(soap, sizeof(struct tt__IPAddress));
-    // memset(trt__GetProfilesResponse->Profiles[i].VideoEncoderConfiguration->Multicast->Address, 0, sizeof(struct tt__IPAddress));
-    // trt__GetProfilesResponse->Profiles[i].VideoEncoderConfiguration->Multicast->Address->Type = tt__IPType__IPv4;
-    // trt__GetProfilesResponse->Profiles[i].VideoEncoderConfiguration->Multicast->Address->IPv4Address = (char *)soap_malloc(soap, sizeof(char) * 32);
-    // memset(trt__GetProfilesResponse->Profiles[i].VideoEncoderConfiguration->Multicast->Address->IPv4Address, 0, sizeof(char) * 32);
-    // strcpy(trt__GetProfilesResponse->Profiles[i].VideoEncoderConfiguration->Multicast->Address->IPv4Address, "224.1.0.0");
-
-    // trt__GetProfilesResponse->Profiles[i].VideoEncoderConfiguration->Multicast->Port = 40000;
-    // trt__GetProfilesResponse->Profiles[i].VideoEncoderConfiguration->Multicast->TTL = 64;
-    // trt__GetProfilesResponse->Profiles[i].VideoEncoderConfiguration->Multicast->AutoStart = xsd__boolean__true_;
+    trt__GetProfilesResponse->Profiles[i].VideoEncoderConfiguration->Multicast = (struct tt__MulticastConfiguration *)soap_malloc(soap, sizeof(struct tt__MulticastConfiguration));
+    memset(trt__GetProfilesResponse->Profiles[i].VideoEncoderConfiguration->Multicast, '\0', sizeof(struct tt__MulticastConfiguration));
+    trt__GetProfilesResponse->Profiles[i].VideoEncoderConfiguration->Multicast->Address = (struct tt__IPAddress *)soap_malloc(soap, sizeof(struct tt__IPAddress));
+    memset(trt__GetProfilesResponse->Profiles[i].VideoEncoderConfiguration->Multicast->Address, 0, sizeof(struct tt__IPAddress));
+    trt__GetProfilesResponse->Profiles[i].VideoEncoderConfiguration->Multicast->Address->Type = tt__IPType__IPv4;
+    trt__GetProfilesResponse->Profiles[i].VideoEncoderConfiguration->Multicast->Address->IPv4Address = (char *)soap_malloc(soap, sizeof(char) * 32);
+    memset(trt__GetProfilesResponse->Profiles[i].VideoEncoderConfiguration->Multicast->Address->IPv4Address, 0, sizeof(char) * 32);
+    strcpy(trt__GetProfilesResponse->Profiles[i].VideoEncoderConfiguration->Multicast->Address->IPv4Address, "0.0.0.0");
+    trt__GetProfilesResponse->Profiles[i].VideoEncoderConfiguration->Multicast->Port = 8860;
+    trt__GetProfilesResponse->Profiles[i].VideoEncoderConfiguration->Multicast->TTL = 128;
+    trt__GetProfilesResponse->Profiles[i].VideoEncoderConfiguration->Multicast->AutoStart = xsd__boolean__false_;
 
     trt__GetProfilesResponse->Profiles[i].PTZConfiguration = (struct tt__PTZConfiguration *)soap_malloc(soap, sizeof(struct tt__PTZConfiguration));
     memset(trt__GetProfilesResponse->Profiles[i].PTZConfiguration, 0, sizeof(struct tt__PTZConfiguration));
@@ -3292,7 +3302,7 @@ SOAP_FMAC5 int SOAP_FMAC6 __trt__GetStreamUri(struct soap* soap, struct _trt__Ge
 
     trt__GetStreamUriResponse->MediaUri->Uri = (char *)soap_malloc(soap, sizeof(char) * 100);
     memset(trt__GetStreamUriResponse->MediaUri->Uri, '\0', sizeof(char) * 100);
-    sprintf(trt__GetStreamUriResponse->MediaUri->Uri, "rtsp://192.168.88.124/mainstream");
+    sprintf(trt__GetStreamUriResponse->MediaUri->Uri, "rtsp://admin:xwzk123321@192.168.1.250:8554/h264");
     trt__GetStreamUriResponse->MediaUri->InvalidAfterConnect = xsd__boolean__true_;
     trt__GetStreamUriResponse->MediaUri->InvalidAfterReboot  = xsd__boolean__true_;
     //超时时间
