@@ -2350,12 +2350,12 @@ SOAP_FMAC5 int SOAP_FMAC6 __tptz__GetNode(struct soap* soap, struct _tptz__GetNo
     memset(tptz__GetNodeResponse->PTZNode->Name, '\0', sizeof(char) * 32);
     strcpy(tptz__GetNodeResponse->PTZNode->Name, "PTZNODE");
     
-    tptz__GetNodeResponse->PTZNode->SupportedPTZSpaces = (struct tt__PTZSpaces *)soap_malloc(soap, sizeof(struct tt__PTZSpaces));
-    memset(tptz__GetNodeResponse->PTZNode->SupportedPTZSpaces, 0, sizeof(struct tt__PTZSpaces));
+    // tptz__GetNodeResponse->PTZNode->SupportedPTZSpaces = (struct tt__PTZSpaces *)soap_malloc(soap, sizeof(struct tt__PTZSpaces));
+    // memset(tptz__GetNodeResponse->PTZNode->SupportedPTZSpaces, 0, sizeof(struct tt__PTZSpaces));
 
 
-    tptz__GetNodeResponse->PTZNode->SupportedPTZSpaces->ContinuousPanTiltVelocitySpace = (struct tt__Space2DDescription *) soap_malloc(soap, sizeof(struct tt__Space2DDescription) * 2);
-    memset(tptz__GetNodeResponse->PTZNode->SupportedPTZSpaces->ContinuousPanTiltVelocitySpace, 0, sizeof(struct tt__Space2DDescription) * 2);
+    // tptz__GetNodeResponse->PTZNode->SupportedPTZSpaces->ContinuousPanTiltVelocitySpace = (struct tt__Space2DDescription *) soap_malloc(soap, sizeof(struct tt__Space2DDescription) * 2);
+    // memset(tptz__GetNodeResponse->PTZNode->SupportedPTZSpaces->ContinuousPanTiltVelocitySpace, 0, sizeof(struct tt__Space2DDescription) * 2);
     // printf("%p\n", &(tptz__GetNodeResponse->PTZNode->SupportedPTZSpaces->ContinuousPanTiltVelocitySpace[0]));
     // printf("%p\n", &(tptz__GetNodeResponse->PTZNode->SupportedPTZSpaces->ContinuousPanTiltVelocitySpace[1]));
 
@@ -2373,17 +2373,17 @@ SOAP_FMAC5 int SOAP_FMAC6 __tptz__GetNode(struct soap* soap, struct _tptz__GetNo
 
     // printf("%s\n", tptz__GetNodeResponse->PTZNode->SupportedPTZSpaces->ContinuousPanTiltVelocitySpace->URI);
 
-    tptz__GetNodeResponse->PTZNode->SupportedPTZSpaces->ContinuousPanTiltVelocitySpace[0].URI = (char *)soap_malloc(soap, sizeof(char) * 128);
-    memset(tptz__GetNodeResponse->PTZNode->SupportedPTZSpaces->ContinuousPanTiltVelocitySpace[0].URI, '\0', sizeof(char) * 128);
-    sprintf(tptz__GetNodeResponse->PTZNode->SupportedPTZSpaces->ContinuousPanTiltVelocitySpace[0].URI, "http://www.onvif.org/ver10/tptz/PanTiltSpaces/VelocityGenericSpace");
-    tptz__GetNodeResponse->PTZNode->SupportedPTZSpaces->ContinuousPanTiltVelocitySpace[0].XRange = (struct tt__FloatRange *)soap_malloc(soap, sizeof(struct tt__FloatRange));
-    memset(tptz__GetNodeResponse->PTZNode->SupportedPTZSpaces->ContinuousPanTiltVelocitySpace[0].XRange, 0, sizeof(struct tt__FloatRange));
-    tptz__GetNodeResponse->PTZNode->SupportedPTZSpaces->ContinuousPanTiltVelocitySpace[0].XRange->Min = -1.000000;
-    tptz__GetNodeResponse->PTZNode->SupportedPTZSpaces->ContinuousPanTiltVelocitySpace[0].XRange->Max = 1.000000;
-    tptz__GetNodeResponse->PTZNode->SupportedPTZSpaces->ContinuousPanTiltVelocitySpace[0].YRange = (struct tt__FloatRange *)soap_malloc(soap, sizeof(struct tt__FloatRange));
-    memset(tptz__GetNodeResponse->PTZNode->SupportedPTZSpaces->ContinuousPanTiltVelocitySpace[0].YRange, 0, sizeof(struct tt__FloatRange));
-    tptz__GetNodeResponse->PTZNode->SupportedPTZSpaces->ContinuousPanTiltVelocitySpace[0].YRange->Min = -1.000000;
-    tptz__GetNodeResponse->PTZNode->SupportedPTZSpaces->ContinuousPanTiltVelocitySpace[0].YRange->Max = 1.000000;
+    // tptz__GetNodeResponse->PTZNode->SupportedPTZSpaces->ContinuousPanTiltVelocitySpace[0].URI = (char *)soap_malloc(soap, sizeof(char) * 128);
+    // memset(tptz__GetNodeResponse->PTZNode->SupportedPTZSpaces->ContinuousPanTiltVelocitySpace[0].URI, '\0', sizeof(char) * 128);
+    // sprintf(tptz__GetNodeResponse->PTZNode->SupportedPTZSpaces->ContinuousPanTiltVelocitySpace[0].URI, "http://www.onvif.org/ver10/tptz/PanTiltSpaces/VelocityGenericSpace");
+    // tptz__GetNodeResponse->PTZNode->SupportedPTZSpaces->ContinuousPanTiltVelocitySpace[0].XRange = (struct tt__FloatRange *)soap_malloc(soap, sizeof(struct tt__FloatRange));
+    // memset(tptz__GetNodeResponse->PTZNode->SupportedPTZSpaces->ContinuousPanTiltVelocitySpace[0].XRange, 0, sizeof(struct tt__FloatRange));
+    // tptz__GetNodeResponse->PTZNode->SupportedPTZSpaces->ContinuousPanTiltVelocitySpace[0].XRange->Min = -1.000000;
+    // tptz__GetNodeResponse->PTZNode->SupportedPTZSpaces->ContinuousPanTiltVelocitySpace[0].XRange->Max = 1.000000;
+    // tptz__GetNodeResponse->PTZNode->SupportedPTZSpaces->ContinuousPanTiltVelocitySpace[0].YRange = (struct tt__FloatRange *)soap_malloc(soap, sizeof(struct tt__FloatRange));
+    // memset(tptz__GetNodeResponse->PTZNode->SupportedPTZSpaces->ContinuousPanTiltVelocitySpace[0].YRange, 0, sizeof(struct tt__FloatRange));
+    // tptz__GetNodeResponse->PTZNode->SupportedPTZSpaces->ContinuousPanTiltVelocitySpace[0].YRange->Min = -1.000000;
+    // tptz__GetNodeResponse->PTZNode->SupportedPTZSpaces->ContinuousPanTiltVelocitySpace[0].YRange->Max = 1.000000;
     //tptz__GetNodeResponse->PTZNode->SupportedPTZSpaces->ContinuousPanTiltVelocitySpace[1].URI = (char *)soap_malloc(soap, sizeof(char) * 128);
     // memset(tptz__GetNodeResponse->PTZNode->SupportedPTZSpaces->ContinuousPanTiltVelocitySpace[1].URI, '\0', sizeof(char) * 128);
     // sprintf(tptz__GetNodeResponse->PTZNode->SupportedPTZSpaces->ContinuousPanTiltVelocitySpace[1].URI, "http://www.onvif.org/ver10/tptz/PanTiltSpaces/VelocitySpaceFOV");
@@ -2457,13 +2457,9 @@ SOAP_FMAC5 int SOAP_FMAC6 __tptz__SetHomePosition(struct soap* soap, struct _tpt
 /** Web service operation '__tptz__ContinuousMove' (returns SOAP_OK or error code) */
 SOAP_FMAC5 int SOAP_FMAC6 __tptz__ContinuousMove(struct soap* soap, struct _tptz__ContinuousMove *tptz__ContinuousMove, struct _tptz__ContinuousMoveResponse *tptz__ContinuousMoveResponse)
 {
-    printf("%s\n", tptz__ContinuousMove->ProfileToken);
-    //printf("%s\n", tptz__ContinuousMove->Velocity->PanTilt->space);
-    printf("%f\n", tptz__ContinuousMove->Velocity->PanTilt->x);
-    printf("%f\n", tptz__ContinuousMove->Velocity->PanTilt->y);
-
-
-
+    struct tt__PTZSpeed *v = tptz__ContinuousMove->Velocity;
+    if (v->PanTilt) printf("PanTilt:\n%f\n%f\n", v->PanTilt->x, v->PanTilt->y);
+    if (v->Zoom) printf("Zoom:\n%f\n", v->Zoom->x);
     return 0;
 }
 
@@ -3066,7 +3062,29 @@ SOAP_FMAC5 int SOAP_FMAC6 __trt__DeleteProfile(struct soap* soap, struct _trt__D
 /** Web service operation '__trt__GetVideoSourceConfigurations' (returns SOAP_OK or error code) */
 SOAP_FMAC5 int SOAP_FMAC6 __trt__GetVideoSourceConfigurations(struct soap* soap, struct _trt__GetVideoSourceConfigurations *trt__GetVideoSourceConfigurations, struct _trt__GetVideoSourceConfigurationsResponse *trt__GetVideoSourceConfigurationsResponse)
 {
+    trt__GetVideoSourceConfigurationsResponse->__sizeConfigurations = 1;
+    trt__GetVideoSourceConfigurationsResponse->Configurations = (struct tt__VideoSourceConfiguration *)soap_malloc(soap, sizeof(struct tt__VideoSourceConfiguration) * trt__GetVideoSourceConfigurationsResponse->__sizeConfigurations);
+    memset(trt__GetVideoSourceConfigurationsResponse->Configurations, '\0', sizeof(struct tt__VideoSourceConfiguration) * trt__GetVideoSourceConfigurationsResponse->__sizeConfigurations);
 
+    trt__GetVideoSourceConfigurationsResponse->Configurations[0].UseCount = 1;
+    trt__GetVideoSourceConfigurationsResponse->Configurations[0].Name = (char*)soap_malloc(soap, sizeof(char) * 32);
+    memset(trt__GetVideoSourceConfigurationsResponse->Configurations[0].Name, '\0', sizeof(char) * 32);
+    strcpy(trt__GetVideoSourceConfigurationsResponse->Configurations[0].Name, "VideoSourceConfig");
+
+    trt__GetVideoSourceConfigurationsResponse->Configurations[0].token = (char*)soap_malloc(soap, sizeof(char) * 32);
+    memset(trt__GetVideoSourceConfigurationsResponse->Configurations[0].token, '\0', sizeof(char) * 32);
+    strcpy(trt__GetVideoSourceConfigurationsResponse->Configurations[0].token, "VideoSourceToken");
+
+    trt__GetVideoSourceConfigurationsResponse->Configurations[0].SourceToken = (char*)soap_malloc(soap, sizeof(char) * 32);
+    memset(trt__GetVideoSourceConfigurationsResponse->Configurations[0].SourceToken, '\0', sizeof(char) * 32);
+    strcpy(trt__GetVideoSourceConfigurationsResponse->Configurations[0].SourceToken, "VideoSource_1");
+
+    trt__GetVideoSourceConfigurationsResponse->Configurations[0].Bounds = (struct tt__IntRectangle *)soap_malloc(soap, sizeof(struct tt__IntRectangle));
+    memset(trt__GetVideoSourceConfigurationsResponse->Configurations[0].Bounds, 0, sizeof(struct tt__IntRectangle));
+    trt__GetVideoSourceConfigurationsResponse->Configurations[0].Bounds->x      = 0;
+    trt__GetVideoSourceConfigurationsResponse->Configurations[0].Bounds->y      = 0;
+    trt__GetVideoSourceConfigurationsResponse->Configurations[0].Bounds->width  = ONVIF_FRAME_WIDTH;
+    trt__GetVideoSourceConfigurationsResponse->Configurations[0].Bounds->height = ONVIF_FRAME_HEIGHT;
     return 0;
 }
 
@@ -3116,7 +3134,27 @@ SOAP_FMAC5 int SOAP_FMAC6 __trt__GetAudioDecoderConfigurations(struct soap* soap
 /** Web service operation '__trt__GetVideoSourceConfiguration' (returns SOAP_OK or error code) */
 SOAP_FMAC5 int SOAP_FMAC6 __trt__GetVideoSourceConfiguration(struct soap* soap, struct _trt__GetVideoSourceConfiguration *trt__GetVideoSourceConfiguration, struct _trt__GetVideoSourceConfigurationResponse *trt__GetVideoSourceConfigurationResponse)
 {
+    trt__GetVideoSourceConfigurationResponse->Configuration = (struct tt__VideoSourceConfiguration *)soap_malloc(soap, sizeof(struct tt__VideoSourceConfiguration));
+    memset(trt__GetVideoSourceConfigurationResponse->Configuration, '\0', sizeof(struct tt__VideoSourceConfiguration));
 
+    trt__GetVideoSourceConfigurationResponse->Configuration->UseCount = 1;
+    trt__GetVideoSourceConfigurationResponse->Configuration->Name = (char*)soap_malloc(soap, sizeof(char) * 32);
+    memset(trt__GetVideoSourceConfigurationResponse->Configuration->Name, '\0', sizeof(char) * 32);
+    trt__GetVideoSourceConfigurationResponse->Configuration->token = (char*)soap_malloc(soap, sizeof(char) * 32);
+    memset(trt__GetVideoSourceConfigurationResponse->Configuration->token, '\0', sizeof(char) * 32);
+        strcpy(trt__GetVideoSourceConfigurationResponse->Configuration->Name, "VideoSourceConfig");
+    strcpy(trt__GetVideoSourceConfigurationResponse->Configuration->token, "VideoSourceToken");
+
+    trt__GetVideoSourceConfigurationResponse->Configuration->SourceToken = (char*)soap_malloc(soap, sizeof(char) * 32);
+    memset(trt__GetVideoSourceConfigurationResponse->Configuration->SourceToken, '\0', sizeof(char) * 32);
+    strcpy(trt__GetVideoSourceConfigurationResponse->Configuration->SourceToken, "VideoSource_1");
+
+    trt__GetVideoSourceConfigurationResponse->Configuration->Bounds = (struct tt__IntRectangle *)soap_malloc(soap, sizeof(struct tt__IntRectangle));
+    memset(trt__GetVideoSourceConfigurationResponse->Configuration->Bounds, 0, sizeof(struct tt__IntRectangle));
+    trt__GetVideoSourceConfigurationResponse->Configuration->Bounds->x      = 0;
+    trt__GetVideoSourceConfigurationResponse->Configuration->Bounds->y      = 0;
+    trt__GetVideoSourceConfigurationResponse->Configuration->Bounds->width  = ONVIF_FRAME_WIDTH;
+    trt__GetVideoSourceConfigurationResponse->Configuration->Bounds->height = ONVIF_FRAME_HEIGHT;
     return 0;
 }
 
@@ -3343,7 +3381,15 @@ SOAP_FMAC5 int SOAP_FMAC6 __trt__SetSynchronizationPoint(struct soap* soap, stru
 /** Web service operation '__trt__GetSnapshotUri' (returns SOAP_OK or error code) */
 SOAP_FMAC5 int SOAP_FMAC6 __trt__GetSnapshotUri(struct soap* soap, struct _trt__GetSnapshotUri *trt__GetSnapshotUri, struct _trt__GetSnapshotUriResponse *trt__GetSnapshotUriResponse)
 {
+    trt__GetSnapshotUriResponse->MediaUri = (struct tt__MediaUri *)soap_malloc(soap, sizeof(struct tt__MediaUri));
+    memset(trt__GetSnapshotUriResponse->MediaUri, 0, sizeof(struct tt__MediaUri));
 
+    trt__GetSnapshotUriResponse->MediaUri->Uri = (char *)soap_malloc(soap, sizeof(char) * 100);
+    memset(trt__GetSnapshotUriResponse->MediaUri->Uri, 0, sizeof(char) * 100);
+    sprintf(trt__GetSnapshotUriResponse->MediaUri->Uri, "http://%s:%d/snap0.jpeg", ONVIF_TCP_IP, 80);
+    trt__GetSnapshotUriResponse->MediaUri->InvalidAfterConnect = xsd__boolean__false_;
+    trt__GetSnapshotUriResponse->MediaUri->InvalidAfterReboot = xsd__boolean__false_;
+    trt__GetSnapshotUriResponse->MediaUri->Timeout = ONVIF_TIME_OUT;
     return 0;
 }
 
